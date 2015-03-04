@@ -1,0 +1,968 @@
+//
+//  VFPostTrialScenario.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/7/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+
+#import "VFPostTrialScenario.h"
+#import "VisualFeedback.h"
+#import "VFAnalysisFrame.h"
+#import "WaterScape.h"
+#import "Path.h"
+#import "ADScenarioData.h"
+
+@interface VFPostTrialScenario (private)
+-(void) setUpWaterScape;
+-(void) setUpPath;
+-(void) createTexures;
+-(void) inputAnalysisValues;
+-(void) drawWater;
+@end
+
+
+@implementation VFPostTrialScenario
+
+
+@synthesize animationDelay;
+@synthesize animationDelayValue;
+
+@synthesize waterSheet;
+
+@synthesize showRight;
+@synthesize showLeft;
+@synthesize showRightWithVertical;
+@synthesize showVertical;
+@synthesize showSCurve;
+@synthesize gVisualFeedback;
+@synthesize currentFrame;
+
+@synthesize boatTextureLeft;
+@synthesize boatTextureRight;
+@synthesize boatTextureCenter;
+@synthesize fogTexture1;
+@synthesize fogTexture2;
+
+@synthesize path;
+@synthesize pathError2;
+@synthesize pathReflectionRight;
+@synthesize pathReflectionLeft;
+@synthesize gWaterScape;
+@synthesize sceneOpacity;
+@synthesize postTrialScenarioFadeAnimation;
+@synthesize didFinishAnimating;
+@synthesize boatTransX;
+@synthesize boatTransY;
+@synthesize boatTransZ;
+@synthesize boatRotX;
+@synthesize boatRotY;
+@synthesize boatRotZ;
+
+@synthesize fogOffsetTransX;
+@synthesize fogOffsetTransY;
+@synthesize fogOffsetTransZ;
+@synthesize fogCategory;
+
+@synthesize boatTextureID;
+@synthesize waterTextureID;
+
+@synthesize timeToDisplay;
+
+@synthesize currentOpacity;
+@synthesize opacityIsDecreasing;
+@synthesize nextOpacity;
+@synthesize binIndex;
+
+@synthesize fogOpacity;
+@synthesize fogTranslateX;
+@synthesize fogTranslateY;
+
+@synthesize turnPlotOn;
+@synthesize turnOnAnalysis;
+
+@synthesize valleyOverlay = _valleyOverlay;
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent
+{
+	ReturnNilIfObjectIsNil( aName );
+	ReturnNilIfObjectIsNil( aParent );
+	
+	logDebug( @"VFPostTrialScenario.createWithName( %@ ) parent( %@ )", aName, aParent.name );
+	VFPostTrialScenario * node = [[VFPostTrialScenario alloc] initWithName:aName parent:aParent];
+	ReturnNilIfObjectIsNil( node );
+	
+	return node;
+}
+
+#pragma mark ---- initializers  ----
+- (id) initWithName:(NSString *)aName parent:(Node *)aParent
+{
+	self = [super initWithName:aName parent:aParent];
+    if (self) {
+        
+        //temp ignoring +2 overshoot bins
+		
+		[self setUpPath];
+        
+		[self setUpWaterSheet];
+        
+        [self createTexures];
+        
+		self.sceneOpacity = 0.0;
+		postTrialScenarioFadeAnimation = [[DAnimateFloat alloc] initWithObject:self path:@"sceneOpacity" from:0.0 to:1.0 duration:.5];
+		postTrialScenarioFadeAnimation.mode = DANIMATE_INTERP_LINEAR;
+        
+        self.animationDelay = [[DAnimateFloat alloc] initWithObject:self path:@"animationDelayValue" from:0.0 to:1.0 duration:2];
+		self.animationDelay.mode = DANIMATE_INTERP_LINEAR;
+
+        
+        
+		timekeeper = [TimeController timekeeper];			//create timer for ambient movement
+        timeToDisplay = [TimeController timekeeper];        //create timer for transitioning scene
+	
+        self.path.caseDefaultColor = YES;
+        
+        turnOnAnalysis = YES;
+    }
+    
+    
+	return self;
+}
+
+
+-(void) setUpWaterSheet
+{
+    self.waterSheet = [WaterSheet createWithName:@"PostTrialWaterSheet" parent:[Dash root] withGridDimsX:300 andY:300 withShaderName:@"WavesLevel1"];
+
+    
+    self.waterSheet.scaledX = 1.8;
+    self.waterSheet.scaledY = 1;
+    self.waterSheet.scaledZ = 1;
+    
+
+    self.waterSheet.transX = 0;
+ 	self.waterSheet.transY = -3595.285;//-1734;
+	self.waterSheet.transZ = 2500;//5600;
+	self.waterSheet.rotX = -38.69337;//-19;	
+    
+		
+	self.waterSheet.ampX = 2.631579;
+	self.waterSheet.ampY = 2.631579;
+	
+	self.waterSheet.freqX = .2105;
+	self.waterSheet.freqY = .2105;
+	
+	self.waterSheet.timeFactorX = 10;
+	self.waterSheet.timeFactorY = 5;
+	
+	self.waterSheet.useHeightCalc = 0;	
+
+    self.waterSheet.opacity = 0;
+
+
+}
+
+-(void) createTexures
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+	
+    tempSky = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/postTrial/tempSky.png"] target:GL_TEXTURE_2D];
+    
+//    waterTextureCenter = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/waterCenterFilter.png"] target:GL_TEXTURE_2D];
+    
+    boatTextureCenter = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/boatCenter.png"] target:GL_TEXTURE_2D];
+    
+    fogTexture2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/newFog.png"] target:GL_TEXTURE_2D];
+    
+    paintOverlay = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/paintOverlay.png"] target:GL_TEXTURE_2D];
+}
+
+
+-(void) setUpPath
+{
+    
+    //should be dynamically linked to self.currentFrame.binNumber - likely problem with intialization order - temp fix to set to 20 
+	path = [Path createWithName:@"Path" parent:[Dash root] andPathLength:20];
+	pathReflectionLeft = [Path createWithName:@"Path" parent:[Dash root] andPathLength:20];
+	pathReflectionRight = [Path createWithName:@"Path" parent:[Dash root] andPathLength:20];
+    
+    self.path.transX = 0;
+    self.path.transY = -1186.511;//-1589.929; 
+	self.path.transZ = -1720.524; 
+	self.path.rotX = -56.09648;//-48; 
+    self.path.pathZprimeSpread = 285.237; //210; 
+    self.path.pathSlope = 0;
+    
+    self.pathReflectionLeft.transX = -200; 
+    self.pathReflectionLeft.transY = -2000;
+	self.pathReflectionLeft.transZ = -1720.524; 
+	self.pathReflectionLeft.rotX = -48;
+    self.pathReflectionLeft.pathZprimeSpread = 285.237;//210;    
+    self.pathReflectionLeft.pathSlope = 0;
+    
+    self.pathReflectionRight.transX = 250;
+    self.pathReflectionRight.transY = -2000;
+	self.pathReflectionRight.transZ = -1720.524;
+	self.pathReflectionRight.rotX = -48;
+    self.pathReflectionRight.pathZprimeSpread = 285.237; //210;
+    self.pathReflectionRight.pathSlope = 0;
+    
+//    self.path.enableTallRocks = self.gVisualFeedback.adaptationDelegate.enableVerticalError;
+//    self.pathReflectionLeft.enableTallRocks = self.gVisualFeedback.adaptationDelegate.enableVerticalError;
+//    self.pathReflectionRight.enableTallRocks = self.gVisualFeedback.adaptationDelegate.enableVerticalError;
+    
+    self.path.amplitude = 1100 + 434.4978;
+    self.path.errorAmp2 = 1600 + 102.6201; //self.gVisualFeedback.dialogue.textTransY;
+    self.path.errorAmp3 = 2000 -1000; //self.gVisualFeedback.dialogue.textTransZ;
+    self.path.errorAmp4 = 2200 + 124.1921; //self.pathReflectionRight.rotX;
+    
+    self.boatTransX = 40; 
+    self.boatTransY = 1790;//3000; 
+    self.boatTransZ = -3000;//-5500;
+    
+}
+
+
+-(void) inputAnalysisValues
+{
+     
+//   [self.path.posHorizCategory addObjectsFromArray:self.currentFrame.horizPosCategories];
+//    NSLog(@"number of elements using posttrials pointer to analysis object is: %lu", [self.currentFrame.horizPosCategories count]);
+//    NSLog(@"number of elements analysis object is: %lu", [gVisualFeedback.analysis.currentFrame.horizPosCategories count]);
+
+    
+//    NSLog(@"number of elements path object is: %lu", [path.posHorizCategory count]);
+//    NSLog(@"number of elements analysis object is: %lu", [gVisualFeedback.analysis.currentFrame.horizNegCategories  count]);
+
+    
+    int i;
+    for( i = 0; i < gVisualFeedback.analysis.currentFrame.binNumber; i++ )
+    {
+                
+        [path.posHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizPosMagnitudes objectAtIndex:i] atIndex:i];
+        [path.posHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizPosCategories objectAtIndex:i] atIndex:i];
+        
+        [path.negHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizNegMagnitudes objectAtIndex:i] atIndex:i];
+        [path.negHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizNegCategories objectAtIndex:i] atIndex:i];
+        
+        [path.posVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertPosMagnitudes objectAtIndex:i] atIndex:i];
+        [path.posVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertPosCategories objectAtIndex:i] atIndex:i];
+        
+        [path.negVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertNegMagnitudes objectAtIndex:i] atIndex:i];
+        [path.negVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertNegCategories objectAtIndex:i] atIndex:i];
+        
+        [path.horizDirectionAtPosVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfPosVerticals objectAtIndex:i] atIndex:i];
+        [path.horizDirectionAtNegVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfNegVerticals objectAtIndex:i] atIndex:i];       
+        
+        
+        
+        [pathReflectionLeft.posHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizPosMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionLeft.posHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizPosCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionLeft.negHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizNegMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionLeft.negHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizNegCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionLeft.posVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertPosMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionLeft.posVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertPosCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionLeft.negVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertNegMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionLeft.negVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertNegCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionLeft.horizDirectionAtPosVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfPosVerticals objectAtIndex:i] atIndex:i];
+        [pathReflectionLeft.horizDirectionAtNegVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfNegVerticals objectAtIndex:i] atIndex:i];       
+
+        
+        
+        [pathReflectionRight.posHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizPosMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionRight.posHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizPosCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionRight.negHorizDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.horizNegMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionRight.negHorizCategory insertObject:[gVisualFeedback.analysis.currentFrame.horizNegCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionRight.posVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertPosMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionRight.posVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertPosCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionRight.negVertDisplacement insertObject:[gVisualFeedback.analysis.currentFrame.vertNegMagnitudes objectAtIndex:i] atIndex:i];
+        [pathReflectionRight.negVertCategory insertObject:[gVisualFeedback.analysis.currentFrame.vertNegCategories objectAtIndex:i] atIndex:i];
+        
+        [pathReflectionRight.horizDirectionAtPosVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfPosVerticals objectAtIndex:i] atIndex:i];
+        [pathReflectionRight.horizDirectionAtNegVert insertObject:[gVisualFeedback.analysis.currentFrame.horizDisplacementsOfNegVerticals objectAtIndex:i] atIndex:i];       
+        
+        
+
+        
+        
+        
+    }
+}
+
+
+-(void) simulateAnalysisInput 
+{
+
+    
+    int i;
+    for( i = 0; i < gVisualFeedback.analysis.currentFrame.binNumber; i++ )
+    {
+        if (i==self.binIndex) {
+            
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:self.path.group1PosHorizCat] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:self.path.group1PosHorizMag] atIndex:i];
+            
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:self.path.group1NegHorizCat] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-self.path.group1NegHorizMag] atIndex:i];
+
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:self.path.group1PosVertCat_posHoriz] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:self.path.group1PosVertMag_posHoriz] atIndex:i];
+            
+            [path.negVertCategory insertObject:[NSNumber numberWithFloat:self.path.group1NegVertCat_posHoriz] atIndex:i];
+            [path.negVertDisplacement insertObject:[NSNumber numberWithFloat:-self.path.group1NegVertMag_posHoriz] atIndex:i];
+          
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            [path.horizDirectionAtNegVert insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+
+            
+
+        }
+        else {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.negVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.negVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.horizDirectionAtNegVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+
+
+        }
+    }
+}
+
+
+
+-(void) showPreset 
+{
+    int i;
+    for( i = 0; i < 20; i++ )
+    {
+        
+        
+        [path.posHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        
+        [path.negHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        
+        [path.posVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        
+        [path.negVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        [path.negVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        
+        [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        [path.horizDirectionAtNegVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+        
+        
+        
+    }
+    
+    
+    
+    if(showRight)
+    {
+        for( i = 0; i < 4; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+        } 
+        
+        
+        for( i = 4; i < 8; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        
+        
+        for( i = 8; i <12; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        for( i = 12; i < 16; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        for( i = 16; i < 20; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+        } 
+        
+        
+    }
+    
+    else if(showRightWithVertical)
+    {
+        for( i = 0; i < 4; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+            
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+            
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            
+        } 
+        
+        
+        for( i = 4; i < 8; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            
+            
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+            
+        } 
+        
+        
+        
+        for( i = 8; i <12; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:.2] atIndex:i];
+            
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:.2] atIndex:i];
+            
+            
+        } 
+        
+        for( i = 12; i < 16; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        for( i = 16; i < 20; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+        } 
+        
+        
+    }
+    
+    
+    else if(showVertical)
+    {
+        for( i = 0; i < 4; i++ )
+        {
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:.2] atIndex:i];
+        } 
+        
+        
+        for( i = 4; i < 8; i++ )
+        {
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        
+        
+        for( i = 8; i <12; i++ )
+        {
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:1.2] atIndex:i];
+        } 
+        
+        for( i = 12; i < 16; i++ )
+        {
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:.4] atIndex:i];
+        } 
+        
+        for( i = 16; i < 20; i++ )
+        {
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:.2] atIndex:i];
+        } 
+        
+        
+    }
+    
+    else  if(showLeft)
+    {
+        for( i = 0; i < 4; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-.6] atIndex:i];
+        } 
+        
+        
+        for( i = 4; i < 8; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-1] atIndex:i];
+        } 
+        
+        
+        
+        for( i = 8; i <12; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-1] atIndex:i];
+        } 
+        
+        for( i = 12; i < 16; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-1] atIndex:i];
+        } 
+        
+        for( i = 16; i < 20; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-.6] atIndex:i];
+        } 
+        
+        
+    }
+    
+    
+    else  if(showSCurve)
+    {
+        for( i = 0; i < 4; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:.6] atIndex:i];
+        } 
+        
+        
+        for( i = 4; i < 8; i++ )
+        {
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:1] atIndex:i];
+        } 
+        
+        
+        
+        for( i = 8; i <12; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-1] atIndex:i];
+        } 
+        
+        for( i = 12; i < 16; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-1] atIndex:i];
+        } 
+        
+        for( i = 16; i < 20; i++ )
+        {
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:2] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:-.6] atIndex:i];
+        } 
+        
+        
+    }
+    
+    else {
+        for( i = 0; i < 20; i++ )
+        {
+            
+            
+            [path.posHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.posHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.negHorizCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.negHorizDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.posVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.posVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.negVertCategory insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.negVertDisplacement insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+            [path.horizDirectionAtPosVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            [path.horizDirectionAtNegVert insertObject:[NSNumber numberWithFloat:0] atIndex:i];
+            
+        }
+        
+        
+    }
+    
+    
+}
+
+-(void) glQuadWithTexture:(Texture2d *)texture withHeight:(float) imageHeight withWidth:(float)imageWidth andOpacity:(float) opacity
+{
+	glDisable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	
+ 	glEnable( GL_TEXTURE_2D );
+	
+	float timer = [timekeeper time];
+    
+	glColor4f(1+sin(timer)/2.5, 1+sin(timer)/2.5, 1+sin(timer)/2.5, opacity);
+	
+	[texture bindTexture];
+	
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+	
+	glTexCoord3f(0.0, 0.0, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 0.0, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 1.0, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0, 1.0, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+	glEnd();
+	
+	glDisable( GL_TEXTURE_2D ); 
+}
+
+
+- (void) drawBoat
+{
+	float timer = [timekeeper time];
+	
+    glPushMatrix();
+    
+	glTranslated(self.boatTransX, self.boatTransY, self.boatTransZ);
+	glRotated(0 + 20*sin(timer), 1, 0, 0);
+	glRotated(0*sin(timer), 0, 1, 0);
+	glRotated(3*sin(timer), 0, 0, 1);
+    
+    [self glQuadWithTexture:boatTextureCenter withHeight:1500 withWidth:1500 andOpacity:self.sceneOpacity];
+    
+	glPopMatrix();
+}
+
+
+
+
+- (void) drawFogWithClear:(BOOL)clearFlag
+{
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    
+    glEnable( GL_TEXTURE_2D );
+    
+    
+    if(!clearFlag)
+    {
+//        fogTranslateX = fogTranslateX-3;
+        self.fogOpacity = 0;
+    }
+    
+    if(clearFlag)
+    {
+//        fogTranslateY = fogTranslateY+6;
+//        self.fogOpacity = self.fogOpacity+.01/2;
+        self.fogOpacity = 1;
+
+    }
+
+    
+    
+    
+    glPushMatrix();
+    
+    glColor4f(1, 1, 1, self.sceneOpacity-self.fogOpacity);
+    
+    glRotated(20, 1, 0, 0);
+    glTranslated(fogTranslateX, 205+fogTranslateY, 5300);
+    glScaled(1.55, 2, 2);
+    
+    float imageWidth =1500;
+    float imageHeight =1500;
+    
+    int i;    
+        
+    for (i=0; i < 1+self.fogCategory; i++) {
+        
+        [fogTexture2 bindTexture];
+        
+        glBegin(GL_QUADS);
+        
+        float z=0.0;
+        
+        glTexCoord3f(0.0, 0.0, z);
+        glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+        
+        glTexCoord3f(1.0, 0.0, z);
+        glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+        
+        glTexCoord3f(1.0, 1.0, z);
+        glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+        
+        glTexCoord3f(0.0, 1.0, z);
+        glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+        
+        glEnd();
+        
+    }
+    
+    glDisable( GL_TEXTURE_2D );
+    glPopMatrix();
+    
+    
+}
+
+
+-(void) animateDown
+{
+	[postTrialScenarioFadeAnimation resetFrom:self.sceneOpacity to:0.0 duration:.5]; //for a fixed duration
+	[DAnimation animate:postTrialScenarioFadeAnimation];
+}
+
+-(void) animateUp
+{
+	[postTrialScenarioFadeAnimation resetFrom:self.sceneOpacity to:1.0 duration:1.0]; //for a fixed duration
+	[DAnimation animate:postTrialScenarioFadeAnimation];	
+}
+
+-(void) animateDelayUp;
+{
+	[self.animationDelay resetFrom:self.animationDelayValue to:1.0 duration:self.gVisualFeedback.adaptationDelegate.animationDelayDuration]; //for a fixed duration
+	[DAnimation animate:animationDelay];	
+}
+
+-(void) animateDelayDown;
+{
+	[self.animationDelay resetFrom:self.animationDelayValue to:0.0 duration:.5]; //for a fixed duration
+	[DAnimation animate:animationDelay];	
+}
+
+
+-(void) updateCameraLocation
+{
+    [[[Dash dashView] cam] setTranslateY:-2062.238];
+    [[[Dash dashView] cam] setTranslateZ:6592.179];
+
+
+}
+
+- (void) drawShape:(GraphicsState *)state
+{ 
+    
+//make into transition protocol for each scenario - start here
+    
+    //display of level 1 is dependent on:
+    //1- is level 1 enabled, determined by adaptationPlugin
+    //2- has data been recieved, recieving data will change scenario value
+    //2a - has delayanimation expired
+    //3- are we in the right state
+    //4- has time for display has expired
+    
+    
+  
+    
+    
+
+    
+    //update path values
+    self.pathReflectionLeft.pathZprimeSpread = self.path.pathZprimeSpread;
+    self.pathReflectionRight.pathZprimeSpread = self.path.pathZprimeSpread;
+    
+    self.pathReflectionLeft.transX= self.path.transX;
+    self.pathReflectionRight.transX= self.path.transX;
+
+    self.pathReflectionRight.transY = self.path.transY;
+    self.pathReflectionLeft.transY = self.path.transY;
+  
+    self.pathReflectionRight.transZ = self.path.transZ;
+    self.pathReflectionLeft.transZ = self.path.transZ;    
+  
+    self.pathReflectionRight.rotX = self.path.rotX;
+    self.pathReflectionLeft.rotX = self.path.rotX;   
+    
+    //check 1
+    if (self.gVisualFeedback.adaptationDelegate.enablePostTrial) 
+    {
+        [self updateCameraLocation];
+                
+//        NSLog(@"%f", self.animationDelayValue);
+        
+        if (self.gVisualFeedback.scenarioDidChange)
+        {
+            //check 2
+            if (self.gVisualFeedback.adaptationDelegate.scenario != 1){
+                
+//                NSLog(@"animate DOWN gettin caled");
+
+                [self animateDown];  
+                
+            }
+            if (self.gVisualFeedback.adaptationDelegate.scenario == 1){
+                 
+                
+//                NSLog(@"DELAY UP");
+
+                //check2a
+                [self animateDelayUp];
+                
+                [self.path mixTextures];
+                [self.pathReflectionLeft mixTextures];
+                [self.pathReflectionRight mixTextures];
+                
+                self.fogTranslateY = 0;
+                self.fogTranslateX = 0;
+                self.fogOpacity = 0;
+                
+                [timeToDisplay stop];
+                timeToDisplay.frame = 0;
+                [timeToDisplay start:0];
+                timeToDisplay.playbackState = kPlaybackStateForward;
+
+
+            }
+        }
+        
+        
+        if (self.gVisualFeedback.adaptationDelegate.scenario == 1 && self.animationDelayValue == 1) {
+                
+            if (self.sceneOpacity == 0) {
+            
+//                NSLog(@"animate UP is called");
+                
+                [self animateDelayDown];
+                
+                [self animateUp];
+                
+            }
+        }
+            
+        
+        
+        //check 3 and 4
+        if (timeToDisplay.frame > gVisualFeedback.adaptationDelegate.frameCountForLevel1Display            
+            || gVisualFeedback.analysis.currentFrame.stateFromAnalysis != stop) {
+            
+            self.gVisualFeedback.adaptationDelegate.scenario = 0;     
+    
+//            NSLog(@"time out is getting called");
+
+        }
+        
+//make into transition protocol for each scenario - end here
+
+        
+        //order of drawing
+        //(1) water 
+        //(2) see thru rocks
+        // - need to put in overshoot here
+        //(3) boat 
+        //(4) error path overlaps on boat
+        //(5) normal path overlaps on boat
+        
+        self.waterSheet.opacity = self.sceneOpacity;
+        
+        glPushMatrix();
+        [self.waterSheet drawWater];
+        glPopMatrix();
+        
+        if (turnOnAnalysis)
+        {
+            [self inputAnalysisValues];
+        }
+        else {
+            
+//            [self simulateAnalysisInput];
+            [self showPreset];
+
+        }
+        
+        if(turnOnAnalysis)
+        {
+            [pathReflectionLeft drawPathWithOpacity:self.sceneOpacity/8 andTintRed:1 andTintGreen:1 andTintBlue:1];
+            [pathReflectionRight drawPathWithOpacity:self.sceneOpacity/8 andTintRed:1 andTintGreen:1 andTintBlue:1];   
+        }
+        
+        [self.path drawOvershootWithOpacity: sceneOpacity onLeft:self.gVisualFeedback.analysis.currentFrame.overShootNegative 
+                                                          andRight:self.gVisualFeedback.analysis.currentFrame.overShootPositive];
+
+        
+        [self drawBoat]; 
+            
+        
+        
+            [path drawPathWithOpacity:self.sceneOpacity andTintRed:1 andTintGreen:1 andTintBlue:1];
+            [path drawDeviationWithOpacity:self.sceneOpacity andCaseDefault:self.path.caseDefaultColor];
+    
+
+        if (self.gVisualFeedback.adaptationDelegate.enableTrialFog) {
+            
+            [self drawFogWithClear:self.gVisualFeedback.analysis.currentFrame.liftSuccess];
+        }
+        
+        if (self.turnPlotOn) {
+            
+            [state pushMatrixReset2d]; 
+            
+            float xPos = [state viewportWidth]/2.0;
+            float yPos = [state viewportHeight]/2.0;
+            glTranslated(xPos, yPos, 0);
+            
+            [self.path drawPlotWithState:state andOpacity:self.sceneOpacity]; 
+            
+            [state popMatrix];
+        }
+        
+        glPushMatrix();
+            
+        glTranslated(self.boatTransX, self.boatTransY, self.boatTransZ);
+        glScaled(1, 1, 1);            
+        [self glQuadWithTexture:paintOverlay withHeight:10000 withWidth:10000 andOpacity:gVisualFeedback.dialogue.textTransZ];
+        
+        glPopMatrix();
+        
+        
+                 
+        
+    }
+}
+
+- (void) setVisualFeedback:(VisualFeedback *)f
+{
+	self.gVisualFeedback = f;
+}
+
+- (void) dealloc
+{
+	[postTrialScenarioFadeAnimation release];
+	[super dealloc];
+}
+
+
+@end

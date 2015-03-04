@@ -1,0 +1,124 @@
+// default.framgment
+// Dash
+//
+// Default fragment shader
+// Revised to work properly with blend/alpha, use Opacity uniform.
+
+uniform int UseLight0;
+uniform int UseLight1;
+uniform int UseLight2;
+uniform sampler2DRect BackgroundTexture0;
+//uniform sampler2D BackgroundTexture1;
+
+uniform int UseDiffuseTexture;
+uniform float Opacity;
+uniform float Slope;
+uniform float ColorFactor;
+
+uniform float RedValue;
+uniform float BlueValue;
+uniform float GreenValue;
+
+
+uniform float Segment;
+uniform int TurnHeightCalcOn;
+varying vec4 v_shadowmap_coord; /* the vertex position in shadowmap coords */
+varying vec3 v_position_eye;
+varying vec3 v_normal_eye;
+varying float waveHeight;
+varying float wavePositionX;
+varying float wavePositionY;
+varying float tempNoise;
+
+ 
+void main()
+{
+
+vec4 diffuseTexColor = texture2DRect( BackgroundTexture0, gl_TexCoord[0].st  );
+ 
+//vec4 tColor = texture2DRect( DiffuseTexture, gl_TexCoord[0].st );
+	
+
+ 
+	float opacityBasedOnHeight;	
+/*
+if( TurnHeightCalcOn == 1)
+{
+	if (waveHeight < Segment)
+	{	//float diff = Segment - waveHeight;
+        float diff =  waveHeight - Segment;	
+        opacityBasedOnHeight = waveHeight/diff;
+		gl_FragColor = diffuseTexColor*vec4(opacityBasedOnHeight)*Opacity;
+
+	}
+
+	else {
+		//opacityBasedOnHeight = Opacity;
+        float diff =  waveHeight - Segment;	
+//keep//        opacityBasedOnHeight = diff/waveHeight;
+
+        opacityBasedOnHeight = waveHeight/Segment;
+
+//		gl_FragColor = vec4(0, 0.3, 0.1, opacityBasedOnHeight/2.);
+        
+        gl_FragColor = vec4(0.);
+
+	}
+} 
+*/
+ 
+    
+
+    if( TurnHeightCalcOn == 1)
+    {
+        if (waveHeight < Segment)
+        {	//float diff = Segment - waveHeight;
+            float diff =  waveHeight - Segment;	
+            opacityBasedOnHeight = waveHeight/diff;
+            gl_FragColor = diffuseTexColor*vec4(opacityBasedOnHeight)*Opacity;
+           // gl_FragColor = vec4(1.)*vec4(opacityBasedOnHeight)*Opacity;
+
+        }
+        
+        else if (waveHeight < Segment) {
+            float diff =  waveHeight-Segment;	            
+           // opacityBasedOnHeight = waveHeight/Segment;//toon effect
+            opacityBasedOnHeight = diff/waveHeight; //daytime effect 
+
+            //gl_FragColor = vec4(1.)*vec4(opacityBasedOnHeight)*Opacity;
+            gl_FragColor = vec4(1,0,0,1);
+
+        }
+        else
+        {
+//            gl_FragColor = diffuseTexColor*vec4(5./256.,50./256.,112./256.,.25);
+            gl_FragColor = diffuseTexColor*vec4(3.0);
+
+        }
+    } 
+    
+
+else{ 	
+	//for display	
+		//test for fading out from rocks
+		/*	
+		if (wavePositionX*1.27 > -wavePositionY + 2500. && wavePositionX*1.27 < -wavePositionY +2.*2000.) {
+			gl_FragColor = diffuseTexColor*vec4(Opacity);
+		}
+		else {
+			if (wavePositionX*1.27 < -wavePositionY + 2500.) { 
+				gl_FragColor = diffuseTexColor*vec4(.8); 
+				}
+			if (wavePositionX*1.27 < -wavePositionY + 2300.) { 
+				gl_FragColor = diffuseTexColor*vec4(.75); 
+		 		}
+		*/	
+	
+		gl_FragColor = diffuseTexColor*vec4(RedValue, GreenValue, BlueValue, Opacity);
+	} 
+
+
+//		gl_FragColor = diffuseTexColor;
+
+ }
+

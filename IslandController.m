@@ -1,0 +1,1255 @@
+
+//
+//  IslandController.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 5/20/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "IslandController.h"
+
+@implementation IslandController
+
+@synthesize island3transY = _island3transY;
+@synthesize island4transY = _island4transY;
+@synthesize island3transZ = _island3transZ;
+@synthesize island4transZ = _island4transZ;
+
+
+@synthesize lighteningReflection = _lighteningReflection;
+@synthesize debugSwitch = _debugSwitch;
+@synthesize tempFogScaleX = _tempFogScaleX;
+@synthesize tempFogScaleY = _tempFogScaleY;
+@synthesize waterfallRotX;
+@synthesize waterfallRotY;
+@synthesize waterfallRotZ;
+
+@synthesize waterfallTransX;
+@synthesize waterfallTransY;
+@synthesize waterfallTransZ;
+
+@synthesize waterfallScaleX;
+@synthesize waterfallScaleY;
+@synthesize waterfallScaleZ;
+
+@synthesize islandTypes = _islandTypes;
+@synthesize scatterAmp = _scatterAmp;
+@synthesize distanceThresshold = _distanceThresshold;
+
+@synthesize islandCount = islandCount;
+@synthesize randomFloats = _randomFloats;
+@synthesize islandOverlap = _islandOverlap;
+@synthesize speedFactor = _speedFactor;
+@synthesize horizonIslandDay = _horizonIslandDay;
+@synthesize horizonIslandGrey = _horizonIslandGrey;
+@synthesize horizonIslandDark = _horizonIslandDark;
+
+@synthesize blueFogTexture = _blueFogTexture;
+@synthesize greyFogTexture = _greyFogTexture;
+
+@synthesize lightHouseFail = _lightHouseFail;
+@synthesize manipQualCone1 = _manipQualCone1;
+@synthesize manipQualCone2 = _manipQualCone2;
+@synthesize manipQualFlat1 = _manipQualFlat1;
+@synthesize manipQualFlat2 = _manipQualFlat2;
+
+@synthesize bushIsland = _bushIsland;
+
+@synthesize level3SceneController = _level3SceneController;
+
+@synthesize flatGreenIsland = _flatGreenIsland;
+@synthesize flatGreenIslandBlue = _flatGreenIslandBlue;
+@synthesize flatGreenIslandGrey = _flatGreenIslandGrey;
+
+
+@synthesize flatIslandFail = _flatIslandFail;
+@synthesize islandTexture0 = _islandTexture0;
+@synthesize islandTexture1 = _islandTexture1;
+@synthesize islandTexture2 = _islandTexture2;
+@synthesize islandTexture3 = _islandTexture3;
+
+@synthesize hazyGreyConeIsland = _hazyGreyConeIsland;
+@synthesize hazyBlueConeIsland = _hazyBlueConeIsland;
+@synthesize hazyGreyButtonIsland = _hazyGreyButtonIsland;
+@synthesize hazyButtonIsland = _hazyButtonIsland;
+@synthesize hazeOpacity = _hazeOpacity;
+
+@synthesize hazeScaleX = _hazeScaleX;
+@synthesize hazeScaleY = _hazeScaleY;
+
+@synthesize lightBeam = _lightBeam;
+
+@synthesize waterFallSheet = _waterFallSheet;
+@synthesize waterMist = _waterMist;
+
+@synthesize lightHouse0 = _lightHouse0;
+@synthesize lightHouseLightOff = _lightHouseLightOff;
+@synthesize lightHouseLightOn = _lightHouseLightOn;
+
+@synthesize showLightHouses = _showLightHouses;
+
+@synthesize fractionTraveled = _fractionTraveled;
+@synthesize yComponent = _yComponent;
+@synthesize zComponent = _zComponent;
+
+@synthesize yComponent0 = _yComponent0;
+@synthesize yComponent1 = _yComponent1;
+@synthesize zComponent0 = _zComponent0;
+@synthesize zComponent1 = _zComponent1;
+
+@synthesize islandTransX = _islandTransX;
+@synthesize islandTransY = _islandTransY;
+@synthesize islandTransZ = _islandTransZ;
+
+@synthesize islandScaleX = _islandScaleX;
+@synthesize islandScaleY = _islandScaleY;
+@synthesize islandScaleZ = _islandScaleZ;
+
+@synthesize lightHouseScaleX = _lightHouseScaleX;
+@synthesize lightHouseScaleY = _lightHouseScaleY;
+@synthesize lightHouseScaleZ = _lightHouseScaleZ;
+
+@synthesize lightHouseTransX = _lightHouseTransX;
+@synthesize lightHouseTransY = _lightHouseTransY;
+@synthesize lightHouseTransZ = _lightHouseTransZ;
+
+@synthesize lightHouseRotX = _lightHouseRotX;
+@synthesize lightHouseRotY = _lightHouseRotY;
+@synthesize lightHouseRotZ = _lightHouseRotZ;
+
+@synthesize islandOpacity = _islandOpacity;
+
+@synthesize dTimer = _dTimer;
+
+@synthesize lightOpacityDuringFirstStop = _lightOpacityDuringFirstStop;
+@synthesize lightOpacityDuringSecondStop = _lightOpacityDuringSecondStop;
+
+@synthesize displacement = _displacement;
+@synthesize displacement0 = _displacement0;
+@synthesize displacement1 = _displacement1;
+@synthesize stop0 = _stop0;
+@synthesize stop1 = _stop1;
+@synthesize showFog = _showFog;
+@synthesize fog = _fog;
+
+- (id)initWithPositionX:(float)positionX andPositionY:(float)positionY andPositionZ:(float)positionZ
+{
+	self = [super init];
+    
+    if (self != nil) {
+        
+        self.islandTransX = positionX;
+        self.islandTransY = positionY;
+        self.islandTransZ = positionZ;
+        self.islandScaleZ = 1;
+
+        
+        self.islandScaleX = 200;
+        self.islandScaleY = 150;
+        self.islandScaleZ = 1;
+        
+        self.level3SceneController = [[Level3SceneController alloc] init];
+        
+        [self createTextures];
+    
+        self.islandOverlap = .3;
+        self.islandCount = 200;
+        self.scatterAmp = 1600;
+        self.distanceThresshold = 200000;
+        
+        self.dTimer = [TimeController timekeeper];
+
+        
+        [self createRandomFloatsArray];
+        
+        
+        
+    }
+	return self;
+}
+
+-(id) init
+{
+    return [self initWithPositionX:0 andPositionY:0 andPositionZ:0];
+}
+
+-(void) createTextures
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    
+    self.flatGreenIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIslandSimple2.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+  
+    
+    self.flatGreenIslandGrey = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIslandSimple2Grey.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+
+    self.flatGreenIslandBlue = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIslandSimple2Blue.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+
+    
+    //temp demo 2
+	self.islandTexture0 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIsland2.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    
+    self.islandTexture1 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIsland3.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    
+    
+    
+    self.bushIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/floralIsland.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    self.hazyButtonIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/haze.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    
+     self.hazyGreyConeIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIsland3Grey.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+     self.hazyBlueConeIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greenIsland3Blue.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+     self.hazyGreyButtonIsland = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/hazeGrey.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    self.fog = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/fog.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    self.horizonIslandDay = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/horizonIsland.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+   
+     self.horizonIslandGrey = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/horizonIslandGrey.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+     self.horizonIslandDark = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/horizonIslandDark.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    self.blueFogTexture = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/blueFog.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    self.greyFogTexture = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/greyFog.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    
+    self.waterFallSheet = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/waterFall.png"] target:GL_TEXTURE_2D];
+
+
+    
+//    self.waterMist = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/level3/mist.png"] target:GL_TEXTURE_2D];
+
+}
+
+-(void) createRandomFloatsArray
+{
+    self.randomFloats = [[NSMutableArray alloc] initWithCapacity:self.islandCount];
+    NSNumber * temp;
+
+    int i;
+    for (i=0; i<self.islandCount*2; i++) {
+                
+        
+//        scatter[i] = rand() % 800*(rand() % 2 ? 1 : -1);	
+
+        temp = [NSNumber numberWithFloat:rand() % 10*(rand() % 2 ? 1 : -1)]; //rand()%100 ? 1 : -1];
+        [self.randomFloats insertObject:temp atIndex:i];
+        
+//        NSLog(@"%f", [[self.randomFloats objectAtIndex:i] floatValue]);
+
+
+    }
+    
+}
+
+-(void) mixRandomFloatsArray
+{
+//    NSLog(@"mix random floats called");
+    NSNumber * temp;
+    int i;
+    for (i=0; i<self.islandCount*2; i++) {
+        
+        temp = [NSNumber numberWithFloat:rand()%100];
+        [self.randomFloats insertObject:temp atIndex:i];
+        
+//        NSLog(@"%f", [[self.randomFloats objectAtIndex:i] floatValue]);
+
+    }
+}
+
+
+
+
+
+
+
+-(void) resetDisplacement
+{
+    self.displacement = [self.level3SceneController.singleTravelSegment resetDisplacementFast];
+
+    self.yComponent = 0;
+    self.zComponent = 0;
+}
+
+
+-(void) glQuadCallWithHeight:(float) imageHeight andWidth:(float)imageWidth
+{
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+
+	glTexCoord3f(0.0, 0.0, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 0.0, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 1.0, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0, 1.0, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+    
+	glEnd();
+}
+
+
+
+
+-(void) calcTranslation
+{
+    float waterAngle = -91.06681; //manually set to equal waterSheet.rotX in level3WaterController
+    
+    self.displacement = [self.level3SceneController.singleTravelSegment calcDisplacement];
+    self.yComponent = self.displacement*sin(waterAngle)*self.speedFactor;
+    self.zComponent = self.displacement*cos(waterAngle)*self.speedFactor;
+    
+    self.fractionTraveled = self.displacement/self.level3SceneController.singleTravelSegment.endValue;
+}
+
+
+
+//////////////targets begin
+
+-(void) drawTransportIslandInTravelConditions:(float)travelCondition WithPerformanceLevel:(int)performanceLevel OnSide:(int)islandSide InOrder:(int)islandOrder
+{   
+  /*  
+    if (performanceLevel != 2) {
+        
+        self.islandScaleX = 100;
+        self.islandScaleY = 60;
+        self.islandScaleZ = 1;
+        
+        if (islandSide == 1) {      
+            
+            self.islandTransX = 70000;
+        }
+        if (islandSide == -1) {      
+            
+            self.islandTransX = -70000;
+        }
+        
+        if (islandOrder == 1) {      
+            
+            self.islandTransY = -10000;
+            self.islandTransZ = -210000;
+        }
+        if (islandOrder == 2) {      
+            
+            self.islandTransY = -14000;
+            self.islandTransZ = -310000;
+        }
+        
+        float imageWidth = 1024*self.islandScaleX;
+        float imageHeight = 512*self.islandScaleY;
+        
+        float colorBasedOnDistance = [self calcAdjustedOpacityBasedOnDistance:-(self.islandTransZ-self.zComponent)]; 
+        //input is zcomponent of translation func below
+        
+        float colorBasedOnQuality;
+        
+        if (travelCondition == 0) {
+            colorBasedOnQuality = 1;
+        }
+        
+        if (travelCondition == 1) {
+            colorBasedOnQuality = .4;
+        }
+        
+        if (travelCondition == 2) {
+            colorBasedOnQuality = .15;
+        }
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable( GL_LIGHTING );
+        
+        [self calcTranslation];
+        
+        glColor4f(colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, self.islandOpacity);
+        
+        
+        //draw islands
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        int islandCounter;
+        int maxNumIslands = 1;
+        for (islandCounter = 0; islandCounter < maxNumIslands; islandCounter++)
+        {
+            glPushMatrix();
+            
+            glTranslated(self.islandTransX, self.islandTransY-self.yComponent, self.islandTransZ-self.zComponent+(islandCounter*10000-25000)); 
+            
+            [self.bushIsland bindTexture];
+            
+            int flipFactor;
+            
+            if(islandCounter == 1) {
+                flipFactor = -1;
+            }
+            else {
+                flipFactor = 1;
+            }
+            
+            [self glQuadCallWithHeight:imageHeight andWidth:flipFactor*imageWidth];
+            
+            if(travelCondition == 2) //if severe draw fog 
+            {
+                glColor4f(colorBasedOnDistance, colorBasedOnDistance, colorBasedOnDistance, colorBasedOnDistance/2);  
+                
+                [self.fog bindTexture];
+                [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+            }
+            
+            glPopMatrix();
+            
+        }
+        
+        glDisable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        
+    }
+   */
+    
+}
+
+
+-(void) drawConeIslandInTravelConditions:(float)travelCondition WithPerformanceLevel:(int)performanceLevel OnSide:(int)islandSide InOrder:(int)islandOrder
+{    
+    if (performanceLevel != 2) {
+
+
+        if (performanceLevel == 1)
+        {
+            self.islandScaleX = 90;
+            self.islandScaleY = 75;
+            self.islandScaleZ = 1;
+            
+            self.islandTransX = islandSide*160000;
+                       
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = -1000;
+                self.islandTransZ = -236080;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = -10000;
+                self.islandTransZ = -450000;
+            }
+        }
+        else {
+            self.islandScaleX = 200;
+            self.islandScaleY = 150;
+            self.islandScaleZ = 1;
+            
+            self.islandTransX = islandSide*130000;
+            
+            
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = 15000;
+                self.islandTransZ = -236080;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = 10000;
+                self.islandTransZ = -450000;
+            }
+            
+            if (islandOrder == 3) {      
+                
+                self.islandTransY = 3000 + self.island3transY;
+                self.islandTransZ = -772160 + 150000 + self.island3transZ;
+            }
+            if (islandOrder == 4) {      
+                
+                self.islandTransY = -20000 + 14000 + self.island4transY;
+                self.islandTransZ = -986080 + 150000+ self.island4transZ;
+            }
+
+        }
+        
+
+        
+        
+        float imageWidth = 1024*self.islandScaleX;
+        float imageHeight = 512*self.islandScaleY;       
+        float colorBasedOnDistance = [self calcAdjustedOpacityBasedOnDistance:-(self.islandTransZ-self.zComponent)]; 
+        //input is zcomponent of translation func below
+        
+        float colorBasedOnQuality;
+        
+//        if (travelCondition == 0) {
+//            colorBasedOnQuality = 1;
+//        }
+//        
+//        if (travelCondition == 1) {
+//            colorBasedOnQuality = .4;
+//        }
+//        
+//        if (travelCondition == 2) {
+//            colorBasedOnQuality = .15;
+//        }
+
+        if (travelCondition == 0) {
+            colorBasedOnQuality = 1;
+        }
+        
+        if (travelCondition == 1) {
+            colorBasedOnQuality = .6;
+        }
+        
+        if (travelCondition == 2) {
+            colorBasedOnQuality = .4 + self.lighteningReflection;
+            
+        }
+
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable( GL_LIGHTING );
+
+        int islandCounter;
+        int maxNumIslands = 2;
+        for (islandCounter = 0; islandCounter < maxNumIslands; islandCounter++)
+        {
+            glPushMatrix();
+            
+            [self calcTranslation];
+            glTranslated(self.islandTransX, self.islandTransY-self.yComponent, self.islandTransZ-self.zComponent+(islandCounter*10000-20000)); 
+            
+            //if good or mild Conditions, draw waterfalls
+
+            if ((travelCondition == 0 || travelCondition == 1) && performanceLevel == 0) {
+            
+                glEnable(GL_TEXTURE_2D);
+
+                glColor4f(colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, self.islandOpacity/2);
+
+                
+//                glColor4f(96./255., 158./255., 160./255, self.islandOpacity/2);
+                
+                    if (islandCounter==1) {
+                    
+                        glPushMatrix();    
+                        
+                        glTranslated(-34000, 0, 0);
+                        glScaled(.3, .8, 0);            
+
+                        [self.waterFallSheet bindTexture];
+                        [self glQuadCallWithHeightTest:imageHeight andWidth:imageWidth andAdjust:22 andRandStart:0];
+                       
+                        glPopMatrix();
+                    }
+                    
+                    if (islandCounter==0) {
+                        
+                        glPushMatrix();
+                        
+                        glTranslated(27000, -6000, 0);
+                        glScaled(.6, .6, 0);                    
+                        
+                        [self.waterFallSheet bindTexture];
+                        [self glQuadCallWithHeightTest:imageHeight andWidth:imageWidth andAdjust:22 andRandStart:0];
+                        glDisable(GL_TEXTURE_2D);
+                        
+                        glPopMatrix();
+                    }
+                    
+                glDisable(GL_TEXTURE_2D);
+            }
+
+            //draw islands
+            glEnable(GL_TEXTURE_RECTANGLE_ARB);
+            
+            
+                glColor4f(colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, self.islandOpacity);
+                
+            
+            if ((travelCondition == 0 || travelCondition == 1 || travelCondition == 2) && performanceLevel == 0) {
+            
+                if(islandSide == 1 && islandCounter == 0) {
+
+                    [self.islandTexture1 bindTexture];
+                }
+                else {
+                    [self.islandTexture0 bindTexture];
+                }
+            }           
+            
+            if (travelCondition == 0 && performanceLevel == 1) {
+                                
+                [self.hazyBlueConeIsland bindTexture];
+            }
+            
+            if ((travelCondition == 1 || travelCondition == 2) && performanceLevel == 1) {
+                
+                [self.hazyGreyConeIsland bindTexture];
+            }
+            
+                
+            int flipFactor;
+                
+            if(islandCounter == 1) {
+                flipFactor = -1;
+            }
+            else {
+                flipFactor = 1;
+            }
+        
+            [self glQuadCallWithHeight:imageHeight andWidth:flipFactor*imageWidth];
+            
+            glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+            glPopMatrix();
+
+        }
+    }
+}
+
+-(void) drawButtonIslandInTravelConditions:(float)travelCondition WithPerformanceLevel:(int)performanceLevel OnSide:(int)islandSide InOrder:(int)islandOrder
+{   
+    //if performance is servere, don't draw
+    if (performanceLevel != 2) {
+        
+        //mild, 
+        if (performanceLevel == 1) {
+            
+            self.islandScaleX = 150;
+            self.islandScaleY = 75;
+            
+            self.islandTransX = islandSide*220000;
+            
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = -10000;
+                self.islandTransZ = -239999;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = -20000;
+                self.islandTransZ = -500000;
+            }                    
+        }
+        
+        //good performance
+        else{
+            
+            self.islandScaleX = 350;
+            self.islandScaleY = 200;
+            
+            self.islandTransX = islandSide*220000;
+            
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = 13000;
+                self.islandTransZ = -239999;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = -2000;
+                self.islandTransZ = -500000;
+            }
+            
+        }
+         
+         
+        float imageWidth = 1024*self.islandScaleX;
+        float imageHeight = 512*self.islandScaleY;
+        
+        float colorBasedOnDistance = [self calcAdjustedOpacityBasedOnDistance:-(self.islandTransZ-self.zComponent)]; 
+        //input is zcomponent of translation func below
+        
+        float colorBasedOnQuality;
+        
+        
+        if (travelCondition == 0) {
+            colorBasedOnQuality = 1;
+        }
+        
+        if (travelCondition == 1) {
+            colorBasedOnQuality = .6;
+        }
+        
+        if (travelCondition == 2) {
+            colorBasedOnQuality = .4 + self.lighteningReflection;
+            
+        }
+        
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable( GL_LIGHTING );
+        
+        [self calcTranslation];
+        
+        glColor4f(colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, self.islandOpacity);
+        
+        
+        //draw islands
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        int islandCounter;
+        int maxNumIslands = 1;
+        for (islandCounter = 0; islandCounter < maxNumIslands; islandCounter++)
+        {
+            glPushMatrix();
+            
+            glTranslated(self.islandTransX, self.islandTransY-self.yComponent, self.islandTransZ-self.zComponent+(islandCounter*10000-25000)); 
+            
+            [self.bushIsland bindTexture];
+            
+            int flipFactor;
+            
+            if(islandCounter == 1) {
+                flipFactor = -1;
+            }
+            else {
+                flipFactor = 1;
+            }
+            
+            [self glQuadCallWithHeight:imageHeight andWidth:flipFactor*imageWidth];
+            
+            if((travelCondition == 1 && performanceLevel == 1) || 
+               (travelCondition == 2 && performanceLevel == 1)) //if severe draw fog 
+            {
+                glPushMatrix();
+                glColor4f(1, 1, 1, .8*colorBasedOnDistance);  
+                glScaled(1, 1, 1);
+                
+                [self.hazyGreyButtonIsland bindTexture];
+                [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+                glPopMatrix();
+
+            }
+            
+            
+            if(travelCondition == 0 && performanceLevel == 1) //if manipQuality draw fog 
+            {
+                glPushMatrix();
+                glColor4f(1, 1, 1, .8*colorBasedOnDistance);  
+                glScaled(1, 1, 1);
+                
+                [self.hazyButtonIsland bindTexture];
+                [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+                glPopMatrix();
+            }
+            
+            glPopMatrix();
+            
+        }
+        
+        glDisable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        
+    }
+    
+}
+
+
+-(void) drawVirtualIslandInTravelConditions:(float)travelCondition WithPerformanceLevel:(int)performanceLevel OnSide:(int)islandSide InOrder:(int)islandOrder
+{   
+    //if performance is servere, don't draw
+    if (performanceLevel != 2) {
+        
+            
+        
+        
+        
+        
+        //mild, 
+        if (performanceLevel == 1) {
+            
+            self.islandScaleX = 80;
+            self.islandScaleY = 60;
+            
+            self.islandTransX = islandSide*160000;
+            
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = -7000;
+                self.islandTransZ = -239999;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = -18000;
+                self.islandTransZ = -500000;
+            }                    
+        }
+        
+        
+       
+        
+        //good performance
+        else{
+            
+            self.islandScaleX = 200;
+            self.islandScaleY = 150;
+            
+            self.islandTransX = islandSide*160000;
+            
+            if (islandOrder == 1) {      
+                
+                self.islandTransY = 7000;
+                self.islandTransZ = -239999;
+            }
+            if (islandOrder == 2) {      
+                
+                self.islandTransY = -7000;
+                self.islandTransZ = -500000;
+            }
+            
+        }
+        
+        
+        float imageWidth = 1024*self.islandScaleX;
+        float imageHeight = 512*self.islandScaleY;
+        
+        float colorBasedOnDistance = [self calcAdjustedOpacityBasedOnDistance:-(self.islandTransZ-self.zComponent)]; 
+        //input is zcomponent of translation func below
+        
+        float colorBasedOnQuality;
+        
+        if (travelCondition == 0) {
+            colorBasedOnQuality = 1;
+        }
+        
+        if (travelCondition == 1) {
+            colorBasedOnQuality = .5;
+        }
+        
+        if (travelCondition == 2) {
+            colorBasedOnQuality = .4+self.lighteningReflection;
+        }
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable( GL_LIGHTING );
+        
+        [self calcTranslation];
+        
+        glColor4f(colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, colorBasedOnDistance*colorBasedOnQuality, self.islandOpacity);
+        
+        
+        //draw islands
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        int islandCounter;
+        int maxNumIslands = 1;
+        for (islandCounter = 0; islandCounter < maxNumIslands; islandCounter++)
+        {
+            glPushMatrix();
+            
+            glTranslated(self.islandTransX, self.islandTransY-self.yComponent, self.islandTransZ-self.zComponent+(islandCounter*10000-25000)); 
+            
+            [self.flatGreenIsland bindTexture];
+            
+            int flipFactor;
+            
+            if(islandCounter == 1) {
+                flipFactor = -1;
+            }
+            else {
+                flipFactor = 1;
+            }
+            
+            [self glQuadCallWithHeight:imageHeight andWidth:flipFactor*imageWidth];
+            
+            if((travelCondition == 1 && performanceLevel == 1) || 
+               (travelCondition == 2 && performanceLevel == 1)) //if severe draw fog 
+            {
+                glPushMatrix();
+                glColor4f(1, 1, 1, .8*colorBasedOnDistance);  
+                glScaled(1, 1, 1);
+                
+                [self.flatGreenIslandGrey bindTexture];
+                [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+                glPopMatrix();
+                
+            }
+            
+            
+            if(travelCondition == 0 && performanceLevel == 1) //if manipQuality draw fog 
+            {
+                glPushMatrix();
+                glColor4f(1, 1, 1, .8*colorBasedOnDistance);  
+                glScaled(1, 1, 1);
+                
+                [self.flatGreenIslandBlue bindTexture];
+                [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+                glPopMatrix();
+            }
+            
+            glPopMatrix();
+            
+        }
+        
+        glDisable(GL_TEXTURE_RECTANGLE_ARB);
+        
+        
+    }
+    
+}
+
+//////////////targets end
+
+
+
+-(float) calcAdjustedOpacityBasedOnDistance:(float)zDistance
+{    
+    float adjustedOpacity;
+  
+    if (zDistance <= self.distanceThresshold) {
+        
+        adjustedOpacity = .6+ (zDistance-self.distanceThresshold)/(-self.distanceThresshold);        
+    }
+    
+    if (zDistance > self.distanceThresshold) {
+        
+        adjustedOpacity = .6;
+
+    }
+    return adjustedOpacity;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-(void) drawIslandCluster 
+{
+	float imageWidth;
+	float imageHeight;
+    
+    imageWidth = 1024*self.islandScaleX;
+    imageHeight = 512*self.islandScaleY;
+    
+    
+    [self calcTranslation];
+        
+    float i;
+    float horizScatter;
+    
+
+    
+
+    for (i=3; i>0; i=i-1)
+    {
+    
+        
+        horizScatter = self.scatterAmp*[[self.randomFloats objectAtIndex:i] floatValue];
+        float adjustedOpacity = [self calcAdjustedOpacityBasedOnDistance:(i/2*(500+self.islandTransZ)-self.zComponent)]; //input is zcomponent of translation func below
+
+        
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
+
+        glPushMatrix();
+
+        glTranslated(self.islandTransX+horizScatter, i*self.islandOverlap*(self.islandTransY)-self.yComponent,  i/2*(500+self.islandTransZ)-self.zComponent);		
+
+        glColor4f(adjustedOpacity, adjustedOpacity, adjustedOpacity, self.islandOpacity);  
+
+        [self.islandTexture0 bindTexture];
+        
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+
+        glPopMatrix();
+        
+
+        glDisable(GL_TEXTURE_RECTANGLE_ARB);
+                
+    }
+    
+}
+
+
+-(void) drawBlueFogOverlay
+{
+    float imageWidth;
+	float imageHeight;
+    
+    glColor4f(1.0, 1.0, 1.0, self.islandOpacity*.9);  
+
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDisable( GL_LIGHTING );
+
+    glPushMatrix();
+    
+    imageWidth = 512*25;
+    imageHeight = 512*2.5;
+
+    glTranslated(0, -345.4464, 0);
+
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+
+    [self.blueFogTexture bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+    glPopMatrix();
+}
+
+
+
+-(void) drawGreyFogOverlay
+{
+    float imageWidth;
+	float imageHeight;
+    
+    
+    
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPushMatrix();
+    
+    imageWidth = 512*50;
+//    imageHeight = 512*8;
+    imageHeight = 512*3.5;
+        
+//    glTranslated(0, 368.75, 0);
+    glTranslated(0, -394.4643, 0);
+    
+    
+    glColor4f(self.islandOpacity*.85, self.islandOpacity*.85, self.islandOpacity*.85, self.islandOpacity*.85);  
+
+    [self.greyFogTexture bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glPopMatrix();
+    
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+}
+
+-(void) drawHorizonIslandDay
+{
+    float imageWidth;
+	float imageHeight;
+    
+    glColor4f(1.0, 1.0, 1.0, self.islandOpacity);  
+    
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDisable( GL_LIGHTING );
+    
+    glPushMatrix();
+    
+    imageWidth = 512*25;
+    imageHeight = 512*3;
+    glTranslated(0, -143+350, 0);
+    
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+
+    [self.horizonIslandDay bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+    glPopMatrix();
+}
+
+-(void) drawHorizonIslandGrey
+{
+    float imageWidth;
+	float imageHeight;
+    
+    glColor4f(1.0, 1.0, 1.0, self.islandOpacity);  
+    
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDisable( GL_LIGHTING );
+    
+    glPushMatrix();
+    
+    imageWidth = 512*25;
+    imageHeight = 512*3;
+    glTranslated(0, -143+350, 0);
+    
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    [self.horizonIslandGrey bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+-(void) drawHorizonIslandGreyExtended
+{
+
+
+    float imageWidth =512*30;
+	float imageHeight = 512*8.5;
+    
+//    imageWidth = 512*25;
+//    imageHeight = 512*3;
+
+//    self.skyTransX = 0;
+//    self.skyTransY = 202;
+//    self.skyTransZ = 5600;
+//    self.skyScaleX = 3;
+//    self.skyScaleY = 1.7;
+//    self.skyScaleZ = 0;
+    float scalar = .75;
+    glColor4f(self.islandOpacity*scalar, self.islandOpacity*scalar, self.islandOpacity*scalar, self.islandOpacity*scalar);
+    
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDisable( GL_LIGHTING );
+    
+    glPushMatrix();
+    
+//    glTranslated(0, -143+350, 0);
+//    glTranslated(0, 202, 5600);
+    glTranslated(0, -694.4643, 0);
+    
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    [self.greyFogTexture bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+-(void) drawHorizonIslandDark
+{
+    float imageWidth;
+	float imageHeight;
+    
+    glColor4f(1.0, 1.0, 1.0, self.islandOpacity);  
+    
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDisable( GL_LIGHTING );
+    
+    glPushMatrix();
+    
+    imageWidth = 512*25;
+    imageHeight = 512*3;
+    glTranslated(0, -143+350, 0);
+    
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    [self.horizonIslandDark bindTexture];
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+
+/////////////////////////test
+///////////////////////////testStart
+
+-(void) glQuadCallWithHeightTest:(float) imageHeight andWidth:(float)imageWidth andAdjust:(float)adjustRate andRandStart:(float)randStart
+{
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+	
+    float adjust = adjustRate*[self.dTimer time]/100;
+    
+	glTexCoord3f(0.0, 0.0+fabs(adjust)+randStart, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 0.0+fabs(adjust)+randStart, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 1.0+fabs(adjust)+randStart, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0, 1.0+fabs(adjust)+randStart, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+    
+	glEnd();
+}
+
+
+-(void) drawTestWaterFall
+{
+    float rainSheetDepthOverlap = 0;
+
+    [self.waterFallSheet bindTexture];
+    [self glQuadCallWithHeightTest:self.islandScaleY andWidth:self.islandScaleX andAdjust:16 andRandStart:0];
+
+    
+    glColor4f(1, 1, 1, .5);
+    
+    
+    
+    glPushMatrix();
+    
+    glTranslated(self.islandTransX, self.islandTransY, self.islandTransZ);
+    glRotated(10, 0, 0, 1);
+    
+    [self glQuadCallWithHeightTest:self.islandScaleY andWidth:self.islandScaleX andAdjust:2 andRandStart:30];
+    
+    glTranslated(0, 0, rainSheetDepthOverlap);
+    [self glQuadCallWithHeightTest:self.islandScaleY andWidth:self.islandScaleX andAdjust:-12 andRandStart:90];
+    
+    glTranslated(0, 0, rainSheetDepthOverlap);
+    [self glQuadCallWithHeightTest:self.islandScaleY andWidth:self.islandScaleX andAdjust:16 andRandStart:0];
+    
+    glPopMatrix();
+    
+}
+
+
+
+
+///////////////////endtest
+
+-(void) dealloc
+{
+    [super dealloc];
+    [self.islandTexture1 release];
+    [self.level3SceneController release];
+
+}
+
+@end

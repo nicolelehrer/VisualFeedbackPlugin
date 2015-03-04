@@ -1,0 +1,178 @@
+//
+//  VisualFeedback.h
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/6/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+//  This class implements a Transform node plugin named VisualFeedback.
+
+#import <Cocoa/Cocoa.h>
+#import "DashHeaders.h"
+#import "VFAnalysis.h"
+#import "VFPostTrialScenario.h"
+#import "VFAdaptationDelegate.h"
+#import "Dialogue.h"
+#import "VFWindowController.h"
+#import "VFPostSequenceScenario.h"
+#import "VFPostSetScenario.h"
+#import "WaterScape.h"
+#import "VFAdaptationDebug.h"
+#import "WaterSheet.h"
+
+
+#import "Level2SceneDrawer.h"
+#import "Level3SceneDrawer.h"
+#import "SceneTransitionController.h"
+
+#import "MovieDemo.h"
+
+@class TestScenario;
+@class VFAdaptationDelegate; 
+@class ScenarioController;
+@class VFAdaptationDebug;
+@class SphereDrawer;
+@class YadaYada;
+@class WaterScape;
+@class WaterSheet;
+@class Dialogue;
+
+@class Level2SceneDrawer;
+@class SceneTransitionController;
+@class Level3SceneDrawer;
+
+@class MovieDemo;
+
+@interface VisualFeedback : Transform <DashPluginProtocol>  {
+	
+    NSString * texturesDirectoryPath;
+	
+    MovieDemo * movieDemo;
+    
+    VFAnalysis * analysis;
+	VFPostTrialScenario * postTrialScenario;
+	VFAdaptationDelegate * adaptationDelegate;
+	Dialogue * dialogue;
+	VFWindowController * windowController;
+	VFPostSequenceScenario * postSequenceScenario;
+	VFPostSetScenario * postSetScenario;
+	WaterScape * waterScape;
+    
+    Level2SceneDrawer * level2SceneDrawer;
+    Level3SceneDrawer * level3SceneDrawer;
+    
+    SceneTransitionController * sceneTransistionController;
+    VFAdaptationDebug * adaptationDebug;
+    
+    WaterSheet * waterSheet;
+    
+    Texture2d * testText;
+	
+	DAnimateFloat * dialogueFadeAnimation;
+	float dialogueIntensity;
+	
+	DAnimateFloat * postTrialScenarioFadeAnimation;
+	float postTrialScenarioIntensity;
+	
+	DAnimateFloat * postSequenceScenarioFadeAnimation;
+	float postSequenceScenarioIntensity;
+	
+	float currentScenario;
+	float nextScenario;
+	
+	int countScenarioChanges;
+
+	BOOL scenarioDidChange;
+	BOOL objectFinishedAnimation1;
+	BOOL objectFinishedAnimation2;
+    
+    float camTransX;
+    float camTransY;
+    float camTransZ;
+    
+    float camRotX;
+    float camRotY;
+    float camRotZ;
+	
+    BOOL camTranslateDown;    
+    BOOL camTranslateUp;
+    BOOL camTranslateFwd;
+    BOOL camTranslateBack;
+    BOOL camRotateUp;
+    BOOL camRotateDown;
+    BOOL resetAdjustCameras;
+    float translateIncrement;  
+    float rotateIncrement;
+
+    FunctionView * testCanvas;
+    
+
+  }
+
+@property(retain) MovieDemo * movieDemo;
+
+@property(retain)  Level2SceneDrawer * level2SceneDrawer;
+@property(retain)  Level3SceneDrawer * level3SceneDrawer;
+
+@property(retain) FunctionView * testCanvas;
+
+@property(assign) BOOL camTranslateDown;    
+@property(assign) BOOL camTranslateUp;
+
+@property(assign) BOOL camTranslateFwd;
+@property(assign) BOOL camTranslateBack;
+@property(assign) BOOL camRotateUp;
+@property(assign) BOOL camRotateDown;
+@property(assign) BOOL resetAdjustCameras;
+@property(assign) float translateIncrement;  
+@property(assign) float rotateIncrement;
+
+
+@property(assign) float camTransX;
+@property(assign) float camTransY;
+@property(assign) float camTransZ;
+
+@property(assign) float camRotX;
+@property(assign) float camRotY;
+@property(assign) float camRotZ;
+
+
+@property(retain) NSString * texturesDirectoryPath;
+
+@property(retain) VFAnalysis * analysis;
+@property(retain) VFPostTrialScenario * postTrialScenario;
+@property(retain) VFAdaptationDelegate * adaptationDelegate;
+@property(retain) Dialogue * dialogue;
+@property(retain) VFWindowController * windowController;
+@property(retain) VFPostSequenceScenario * postSequenceScenario;
+@property(retain) VFPostSetScenario * postSetScenario;
+@property(retain) WaterScape * waterScape;
+@property(retain) TestScenario * testScenario;
+@property(retain) SceneTransitionController * sceneTransitionController;
+@property(retain) VFAdaptationDebug * adaptationDebug;
+
+@property(retain) WaterSheet * waterSheet;
+@property(assign) float dialogueIntensity;
+@property(assign) float postTrialScenarioIntensity;
+@property(assign) float postSequenceScenarioIntensity;
+
+
+@property(assign) float currentScenario;
+@property(assign) float nextScenario;
+
+@property(assign) BOOL scenarioDidChange;
+@property(assign) BOOL objectFinishedAnimation1;
+@property(assign) BOOL objectFinishedAnimation2;
+
+@property(assign) int countScenarioChanges;
+@property(assign)     BOOL analysisON;
+@property(assign) float farClipValue;
+
+
+// class methods
++ (BOOL) initializePlugin:(NSBundle *)bundle;
++ (VFAdaptationDelegate*) vfAdaptationDelegate;
++ (VisualFeedback*) sharedVisualFeedback; 
+- (void) adjustCameras;
+ 
+@end

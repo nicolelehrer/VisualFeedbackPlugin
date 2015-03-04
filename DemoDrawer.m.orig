@@ -1,0 +1,234 @@
+//
+//  DemoDrawer.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 9/11/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "DemoDrawer.h"
+
+@implementation DemoDrawer
+
+@synthesize gVisualFeedback = _gVisualFeedback;
+@synthesize currentFrame = _currentFrame;
+@synthesize taskSceneTransitionController = _taskSceneTransitionController;
+@synthesize feedbackSceneTransitionController = _feedbackSceneTransitionController;
+@synthesize setUpSceneTransitionController = _setUpSceneTransitionController;
+
+@synthesize taskDemoOpacity = _taskDemoOpacity;
+@synthesize feedbackDemoOpacity = _feedbackDemoOpacity;
+@synthesize setUpDemoOpacity = _setUpDemoOpacity;
+
+@synthesize taskTextController = _taskTextController;
+@synthesize taskImageController = _taskImageController;
+@synthesize feedbackTextController = _feedbackTextController;
+@synthesize feedbackImageController = _feedbackImageController;
+@synthesize setUpTextController = _setUpTextController;
+@synthesize setUpImageController = _setUpImageController;
+
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent
+{
+	ReturnNilIfObjectIsNil( aName );
+	ReturnNilIfObjectIsNil( aParent );
+	
+	logDebug( @"VFPostSetScenario.createWithName( %@ ) parent( %@ )", aName, aParent.name );
+	DemoDrawer * node = [[DemoDrawer alloc] initWithName:aName parent:aParent];
+	ReturnNilIfObjectIsNil( node );
+	
+	return node;
+}
+
+
+
+#pragma mark ---- initializers  ----
+- (id) initWithName:(NSString *)aName parent:(Node *)aParent
+{
+	self = [super initWithName:aName parent:aParent];
+    if (self) {
+        
+        [self createSceneObjects];
+         
+        self.taskSceneTransitionController.useTimeOut = NO;
+        self.taskSceneTransitionController.delayDurationInSeconds = 0.0;
+        
+        self.feedbackSceneTransitionController.useTimeOut = NO;
+        self.feedbackSceneTransitionController.delayDurationInSeconds = 0.0;
+        
+        self.setUpSceneTransitionController.useTimeOut = NO;
+        self.setUpSceneTransitionController.delayDurationInSeconds = 0.0;
+        
+    }
+	
+	return self;
+}
+
+
+-(void) createSceneObjects
+{
+    self.taskSceneTransitionController = [[SceneTransitionController alloc] initWithStartValue:0 andEndValue:1 andDurationInSec:.5];    
+    self.taskTextController = [[TextController alloc] init];
+    self.taskImageController = [[ImageController alloc] init];
+    
+    self.feedbackSceneTransitionController = [[SceneTransitionController alloc] initWithStartValue:0 andEndValue:1 andDurationInSec:.5];    
+    self.feedbackTextController = [[TextController alloc] init];
+    self.feedbackImageController = [[ImageController alloc] init];
+    
+    self.setUpSceneTransitionController = [[SceneTransitionController alloc] initWithStartValue:0 andEndValue:1 andDurationInSec:.5];    
+    self.setUpTextController = [[TextController alloc] init];
+    self.setUpImageController = [[ImageController alloc] init];
+    
+}
+
+
+
+
+//handled in textController for taskDemo
+-(void) sendNotificationOfSceneTransitions 
+{
+}
+
+-(void) manageSceneTransitionForLevelID:(int)levelID
+{      
+    
+    if (levelID == 6) {
+        
+        [self.setUpSceneTransitionController updateSceneIDWith:self.gVisualFeedback.adaptationDelegate.scenario];
+        
+        self.setUpDemoOpacity = [self.setUpSceneTransitionController animateOpacityForSceneID:levelID];
+        self.setUpTextController.textOpacity = self.setUpDemoOpacity;
+        self.setUpImageController.imageOpacity = self.setUpDemoOpacity;
+        
+        if (self.setUpSceneTransitionController.oneTimeResetAfterFadeDown) {
+            [self.setUpTextController.synth stopSpeaking];
+        }
+    }
+
+    
+    if (levelID == 7) {
+        
+        [self.taskSceneTransitionController updateSceneIDWith:self.gVisualFeedback.adaptationDelegate.scenario];
+        
+        self.taskDemoOpacity = [self.taskSceneTransitionController animateOpacityForSceneID:levelID];
+        self.taskTextController.textOpacity = self.taskDemoOpacity;
+        self.taskImageController.imageOpacity = self.taskDemoOpacity;
+        
+        if (self.taskSceneTransitionController.oneTimeResetAfterFadeDown) {
+            [self.taskTextController.synth stopSpeaking];
+        }
+    }
+    
+    if (levelID == 8) {
+        
+        [self.feedbackSceneTransitionController updateSceneIDWith:self.gVisualFeedback.adaptationDelegate.scenario];
+        
+        self.feedbackDemoOpacity = [self.feedbackSceneTransitionController animateOpacityForSceneID:levelID];
+        self.feedbackTextController.textOpacity = self.feedbackDemoOpacity;
+        self.feedbackImageController.imageOpacity = self.feedbackDemoOpacity;
+        
+        if (self.feedbackSceneTransitionController.oneTimeResetAfterFadeDown) {
+            [self.feedbackTextController.synth stopSpeaking];
+        }
+    }
+
+    
+}
+
+
+
+
+-(void) drawShape:(GraphicsState *)state
+{    
+    
+    
+    [self manageSceneTransitionForLevelID:6];
+    
+    //set this in adaptationDelegate
+    self.setUpTextController.dialogueGroupName = self.gVisualFeedback.adaptationDelegate.stringForSetupDemo;
+
+
+    if (self.setUpSceneTransitionController.shouldDrawScene) {
+        
+        [self.setUpTextController updateTextWithString:self.setUpTextController.textLineCleaned]; 
+        [self.setUpTextController drawText];
+        [self.setUpImageController drawImageGroup: self.setUpTextController.dialogueGroupName
+                                          WithID: self.setUpTextController.dialogueArrayIndex];
+        
+        
+        self.setUpTextController.playWristPadSound = NO;
+        
+    }
+    
+    
+    [self manageSceneTransitionForLevelID:7];
+    
+    //set this in adaptationDelegate
+    self.taskTextController.dialogueGroupName = @"cone";
+    
+    if (self.taskSceneTransitionController.shouldDrawScene) {
+        
+        [self.taskTextController updateTextWithString:self.taskTextController.textLineCleaned]; 
+        [self.taskTextController drawText];
+        [self.taskImageController drawImageGroup: self.taskTextController.dialogueGroupName
+                                          WithID: self.taskTextController.dialogueArrayIndex];
+        
+        
+        self.taskTextController.playWristPadSound = YES;
+        
+    }
+    
+
+    [self manageSceneTransitionForLevelID:8];
+    
+    self.feedbackTextController.dialogueGroupName = @"feedbackL1Visual";
+
+    if (self.feedbackSceneTransitionController.shouldDrawScene) {
+        
+        [self.feedbackTextController updateTextWithString:self.feedbackTextController.textLineCleaned]; 
+        [self.feedbackTextController drawText];
+        [self.feedbackImageController drawImageGroup: self.feedbackTextController.dialogueGroupName
+                                              WithID: self.feedbackTextController.dialogueArrayIndex];        
+    
+    
+        self.taskTextController.playWristPadSound = NO;
+
+    }
+    
+//    [self manageSceneTransitionForLevelID:9];
+//    
+//    self.feedbackTextController.dialogueGroupName = @"feedbackL1Visual";
+//    
+//    if (self.feedbackSceneTransitionController.shouldDrawScene) {
+//        
+//        [self.feedbackTextController updateTextWithString:self.feedbackTextController.textLineCleaned]; 
+//        [self.feedbackTextController drawText];
+//        [self.feedbackImageController drawImageGroup: self.feedbackTextController.dialogueGroupName
+//                                              WithID: self.feedbackTextController.dialogueArrayIndex];        
+//        
+//        
+//        self.taskTextController.playWristPadSound = NO;
+//        
+//    }
+    
+}
+
+
+
+
+
+-(void) setVisualFeedback:(VisualFeedback *) f
+{        
+	self.gVisualFeedback = f;
+}
+
+-(void) dealloc
+{
+    [super dealloc];
+
+    
+}
+
+
+@end
+

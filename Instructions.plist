@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>flatTargetID</key>
+	<string>You will now perform five 
+reaches to the flat object.</string>
+	<key>buttonTargetID</key>
+	<string>You will now perform five 
+reaches to the button.</string>
+	<key>coneTargetID</key>
+	<string>You will now perform five 
+reaches to the cone.</string>
+	<key>cylinderTargetID</key>
+	<string>You will now perform five 
+reaches to the cylinder object.</string>
+	<key>cylinderLiftTargetID</key>
+	<string>You will now perform five 
+reaches to the cylinder object 
+in which you will lift up the object.</string>
+	<key>coneLiftTargetID</key>
+	<string>You will now perform five 
+reaches to the cone object 
+in which you will lift up the object.</string>
+	<key>virtualVirtualTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first touch a flat object and then
+directly touch another flat object.</string>
+	<key>virtualButtonTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first touch a flat object and 
+then directly touch a button object.</string>
+	<key>buttonVirtualTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first touch a button object and
+then directly touch a flat object.</string>
+	<key>virtualConeTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first touch a flat object and 
+then directly grasp a cone object.</string>
+	<key>coneVirtualTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first grasp a cone object and 
+then directly touch a flat object.</string>
+	<key>virtualCylinderTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first touch a flat object and then 
+directly grasp a cylinder object.</string>
+	<key>cylinderVirtualTargetID</key>
+	<string>Now you will perform a 
+series of reaches where you will 
+first grasp a cylinder object and 
+then directly touch a flat object.</string>
+	<key>cylinderTransportTargetID</key>
+	<string>You will now perform a 
+series of reaches in which 
+you will move the cylinder 
+object between two locations.</string>
+	<key>coneTransportTargetID</key>
+	<string>You will now perform a 
+series of reaches in which 
+you will move the cone
+object between two locations.</string>
+	<key>virtualFull</key>
+	<string>movie</string>
+	<key>buttonFull</key>
+	<string>movie</string>
+	<key>coneFull</key>
+	<string>movie</string>
+	<key>transportConeFull</key>
+	<string>movie</string>
+	<key>cylinderFull</key>
+	<string>movie</string>
+	<key>cylinderWithLiftFull</key>
+	<string>movie</string>
+	<key>transportConeWithLiftFull</key>
+	<string>movie</string>
+	<key>virtualPrompt</key>
+	<string>Touch the center of the object 
+until you see a green light.</string>
+	<key>buttonPrompt</key>
+	<string>Touch the middle of the circular face 
+until you see a green light.</string>
+	<key>conePrompt</key>
+	<string>When grasping the cone, wrap your fingers 
+around the black band and squeeze 
+until you see a green light.</string>
+	<key>transportConePrompt</key>
+	<string>When grasping the cone, wrap your fingers 
+around the black band and squeeze 
+until you see a green light.</string>
+	<key>cylinderPrompt</key>
+	<string>When grasping the cylinder, wrap your 
+fingers around the black band and squeeze 
+until you see a green light.</string>
+	<key>cylinderWithLiftPrompt</key>
+	<string>When grasping the cylinder, wrap your  fingers around the black band and 
+squeeze until you see a green light. 
+Then, lift the object up until you hear the 
+success sound. Then, deposit the object back.</string>
+	<key>transportConeWithLiftPrompt</key>
+	<string>When grasping the cone, wrap your  fingers around the black band and 
+squeeze until you see a green light. 
+Then, lift the object up until you hear the 
+success sound. Then, deposit the object back.</string>
+	<key>virtualL2Full</key>
+	<string>movie</string>
+	<key>buttonL2Full</key>
+	<string>movie</string>
+	<key>coneL2Full</key>
+	<string>movie</string>
+	<key>transportConeL2Full</key>
+	<string>movie</string>
+	<key>cylinderL2Full</key>
+	<string>movie</string>
+	<key>cylinderWithLiftL2Full</key>
+	<string>movie</string>
+	<key>transportConeWithLiftL2Full</key>
+	<string>movie</string>
+	<key>virtualL2Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you have 
+touched the object and wait for the 
+white light to come on again.</string>
+	<key>buttonL2Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you have 
+touched the object and wait for the 
+white light to come on again.</string>
+	<key>coneL2Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you have 
+grasped the object and wait for the 
+white light to come on again.</string>
+	<key>transportConeL2Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you have 
+grasped the object and wait for the 
+white light to come on again.</string>
+	<key>cylinderL2Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you have 
+grasped the object and wait for the 
+white light to come on again.</string>
+	<key>cylinderWithLiftL2Prompt</key>
+	<string>This time, as you reach, you will not
+see any light on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you 
+have grasped the cylinder object, 
+lifted it up, and deposited it back.</string>
+	<key>transportConeWithLiftL2Prompt</key>
+	<string>This time, as you reach, you will not
+see any lights on the object and you 
+will not hear any sounds. Return your 
+hand back to the rest pad after you 
+have grasped the cone object, 
+lifted it up, and deposited it back.</string>
+	<key>virtualVirtualL3Full</key>
+	<string>movie</string>
+	<key>virtualButtonL3Full</key>
+	<string>movie</string>
+	<key>buttonVirtualL3Full</key>
+	<string>movie</string>
+	<key>virtualConeL3Full</key>
+	<string>movie</string>
+	<key>virtualTransportConeL3Full</key>
+	<string>movie</string>
+	<key>coneVirtualL3Full</key>
+	<string>movie</string>
+	<key>transportConeVirtualL3Full</key>
+	<string>movie</string>
+	<key>virtualCylinderL3Full</key>
+	<string>movie</string>
+	<key>cylinderVirtualL3Full</key>
+	<string>movie</string>
+	<key>transportL3Full</key>
+	<string>movie</string>
+	<key>transportConeTransportL3Full</key>
+	<string>movie</string>
+	<key>virtualVirtualL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>virtualButtonL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>buttonVirtualL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>virtualConeL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after grasping the second object. </string>
+	<key>virtualTransportConeL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after grasping the second object. </string>
+	<key>coneVirtualL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>transportConeVirtualL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>virtualCylinderL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after grasping the second object. </string>
+	<key>cylinderVirtualL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after touching the second object. </string>
+	<key>transportL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after depositing the object.</string>
+	<key>transportConeTransportL3Prompt</key>
+	<string>This time, as you reach, you will not 
+see any light on the object and you 
+will not hear any sounds. Return to 
+the rest pad after depositing the object.</string>
+	<key>realTimePathFull</key>
+	<string>movie</string>
+	<key>realTimePathFullBase</key>
+	<string>movie</string>
+	<key>realTimeFlowFull</key>
+	<string>movie</string>
+	<key>realTimeCompensationFull</key>
+	<string>movie</string>
+	<key>realTimePathPrompt</key>
+	<string>While reaching, you may see 
+the object change colors.</string>
+	<key>realTimePathPromptBase</key>
+	<string>While reaching, you may see 
+the base of the object 
+change colors.</string>
+	<key>realTimeFlowPrompt</key>
+	<string>While reaching, you will hear music.</string>
+	<key>realTimeCompensationPrompt</key>
+	<string>While reaching, you may hear foghorns.</string>
+	<key>postReachPathFull</key>
+	<string>movie</string>
+	<key>postReachLiftFull</key>
+	<string>movie</string>
+	<key>postReachPathPrompt</key>
+	<string>After each reach, you will see a picture 
+of a path of rocks leading to a boat.</string>
+	<key>postReachLiftPrompt</key>
+	<string>After each reach, you may see 
+a layer of fog over the boat.</string>
+	<key>l2TaskCompFullTouch</key>
+	<string>movie</string>
+	<key>l2TaskCompFullGrasp</key>
+	<string>movie</string>
+	<key>l2PathFull</key>
+	<string>movie</string>
+	<key>l2FlowFull</key>
+	<string>movie</string>
+	<key>l2LiftFull</key>
+	<string>movie</string>
+	<key>l2CompensationFull</key>
+	<string>movie</string>
+	<key>l2TaskCompPrompt</key>
+	<string>After the completion of five reaches, 
+you will see a picture of a boat 
+with a lantern on top.</string>
+	<key>l2PathPrompt</key>
+	<string>After the completion of five reaches, 
+you will see a picture of a boat.</string>
+	<key>l2FlowPrompt</key>
+	<string>After the completion of five reaches, 
+you will hear some music.</string>
+	<key>l2LiftPrompt</key>
+	<string>After the completion of five reaches, 
+you may see a layer of fog 
+covering the boat.</string>
+	<key>l2CompensationPrompt</key>
+	<string>After the completion of five reaches, 
+you may hear foghorns.</string>
+	<key>l3NonTransportFull</key>
+	<string>movie</string>
+	<key>l3TransportFull</key>
+	<string>movie</string>
+	<key>l3NonTransportPrompt</key>
+	<string>After the completion of the reach, 
+you will see a picture of a boat 
+with two islands.</string>
+	<key>l3TransportPrompt</key>
+	<string>After completing the task, 
+you will see a short movie of a boat 
+traveling to four islands.</string>
+	<key>restPad</key>
+	<string>movie</string>
+	<key>targetSetup</key>
+	<string>animation</string>
+	<key>targetWrong</key>
+	<string>animation</string>
+	<key>skip</key>
+	<string>skip</string>
+	<key>level3Reminder</key>
+	<string>animation</string>
+	<key>notifyTarget</key>
+	<string>animation</string>
+	<key>notifyTargetCone</key>
+	<string>animation</string>
+	<key>notifyTargetWithButtons</key>
+	<string>animation</string>
+	<key>notifyTargetWithButtonsCone</key>
+	<string>animation</string>
+	<key>markersLost</key>
+	<string>The system lost track of your 
+movement. Please return back 
+to the rest pad, and press the 
+button to restart the set of reaches.</string>
+	<key>sameSet</key>
+	<string>Now you will repeat the same
+task with the same type of object.</string>
+	<key>turnOffRTTraj</key>
+	<string>This time while reaching,  you will not see the object 
+change colors.</string>
+	<key>turnOffRTAudio</key>
+	<string>This time while reaching,  you will not hear music.</string>
+	<key>turnOffRTTorso</key>
+	<string>This time while reaching, 
+you will not hear fog horns.</string>
+	<key>turnOffPostVisual</key>
+	<string>This time after you complete
+ a reach, you will not see 
+a picture on the screen.</string>
+	<key>turnOffPostFog</key>
+	<string>This time after you complete 
+a reach, you will not see fog.</string>
+	<key>turnOffL2Light</key>
+	<string>This time after you complete 
+five reaches, you will not 
+see a light atop the boat.</string>
+	<key>turnOffL2Visual</key>
+	<string>This time after you complete 
+five reaches, you will not 
+see an image of a boat.</string>
+	<key>turnOffL2Audio</key>
+	<string>This time after you complete 
+five reaches, you will not 
+hear any music.</string>
+	<key>turnOffL2Torso</key>
+	<string>This time after you complete 
+five reaches, you will not 
+hear any foghorns.</string>
+	<key>turnOffL2Lift</key>
+	<string>This time after you complete 
+five reaches, you will not 
+see any fog.</string>
+	<key>startSet</key>
+	<string>Touch the blue button when you are ready to begin.</string>
+	<key>setRest</key>
+	<string>Touch the button when you are ready 
+to move on to your next set of reaches.
+Please make sure you are sitting up 
+straight before starting.</string>
+	<key>introMovie</key>
+	<string>movie</string>
+	<key>endSession</key>
+	<string>Great job, you have completed
+your session for the day.</string>
+	<key>targetsVideo</key>
+	<string>movie</string>
+	<key>l3CompensationFull</key>
+	<string>movie</string>
+	<key>l3CompensationPrompt</key>
+	<string>After the completion of the reach, 
+you may hear foghorns.</string>
+</dict>
+</plist>

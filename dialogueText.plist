@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>train</key>
+	<array>
+		<string>Let&apos;s get started with today&apos;s training!</string>
+	</array>
+	<key>steps</key>
+	<array>
+		<string>We&apos;ll [[emph+]]now do a series of [[emph+]]steps [[emph-]]to [[emph+]]get ready [[emph+]]for today&apos;s [[emph+]]training.</string>
+	</array>
+	<key>kinectRest</key>
+	<array>
+		<string>Please rest both of your arms on the table. [[slnc 400]]</string>
+	</array>
+	<key>rightTarget</key>
+	<array>
+		<string>Great, those are the right targets. [[slnc 600]]</string>
+	</array>
+	<key>kinectSuccess</key>
+	<array>
+		<string>Thank you.</string>
+		<string>Please sit down at the table [[slnc 300]]and touch the pink button when you are ready[[slnc 500]].</string>
+	</array>
+	<key>help</key>
+	<array>
+		<string>One moment while we get you some assistance. </string>
+	</array>
+	<key>targetSetup</key>
+	<array>
+		<string>Before you sit down, let&apos;s set your table for the day. [[slnc 600]] </string>
+		<string>Please place the targets in the table locations shown. [[slnc 500]] </string>
+		<string>Remove a target by touching it&apos;s blue button. [[slnc 500]] </string>
+		<string>Then touch the pink button when you are ready.</string>
+	</array>
+	<key>seat</key>
+	<array>
+		<string>Please have a seat at the table.</string>
+	</array>
+	<key>kinectCalibrate</key>
+	<array>
+		<string>Now, stand behind the table, at the [[emph +]]taped marking on the floor. [[slnc 500]] </string>
+		<string>Then, please face towards the system.</string>
+	</array>
+	<key>wrongTarget</key>
+	<array>
+		<string>The targets with a red [[emph +]]&quot;X&quot; are incorrect. [[slnc 800]] </string>
+		<string>Please check those targets again, 
+then touch the pink button when ready.</string>
+	</array>
+	<key>cone</key>
+	<array>
+		<string>First you will do a set of five reaches to the[[emph +]]cone. [[slnc 1500]]</string>
+		<string>To start each reach, make sure your right wrist is on the rest pad. [[slnc 500]]</string>
+		<string>If you are not on the rest pad, you will hear the sound of seagulls:</string>
+		<string>[[slnc 300]] [[slnc 7000]]</string>
+		<string>This is a reminder to return your wrist to the rest pad. [[slnc 1500]]</string>
+		<string>When the base lights up,[[slnc 300]]you can begin reaching to the cone. [[slnc 1500]]</string>
+		<string>Grasp your hand as best as you can around the cone,</string>
+		<string>until you see a green light at the top. [[slnc 1700]]</string>
+		<string>Then release the cone,[[slnc 200]]and return your wrist back to the rest pad. [[slnc 1500]]</string>
+		<string>and wait for the base to light up again. [[slnc 1500]]</string>
+		<string>Would you like to go over this again?</string>
+	</array>
+	<key>startUp</key>
+	<array>
+		<string>[[slnc 350]] Welcome.[[slnc 550]] Please touch the pink button on the table to begin.</string>
+	</array>
+	<key>marker</key>
+	<array>
+		<string>Please put the wristband on your right [[emph +]]wrist, as shown. [[slnc 300]]</string>
+	</array>
+	<key>chair</key>
+	<array>
+		<string>Make sure your chair[[emph +]]legs are placed 
+inside the [[emph +]]taped marking on the floor.[[slnc 300]]</string>
+	</array>
+	<key>sessionDone</key>
+	<array>
+		<string>Great work today. You have now completed your session. [[slnc 300]]</string>
+		<string>Please press the button to turn off the system.</string>
+	</array>
+	<key>demoRTAudio</key>
+	<array/>
+	<key>demoRTVisual</key>
+	<array>
+		<string>While you are reaching to the cone, you may see the light change to yellow or red.[[slnc 1500]]</string>
+		<string>Try to keep the light white while you reach.</string>
+	</array>
+	<key>demoPostVisual</key>
+	<array>
+		<string>After a reach, you will see a path of rocks that lead to a boat.</string>
+		<string>To get to the boat, try to create a straight path of white rocks.</string>
+	</array>
+	<key>demoPostVisualWithLift</key>
+	<array>
+		<string>After a reach, you will see a path of rocks that lead to a boat.</string>
+		<string>To get to the boat, try to create a straight path of white rocks.</string>
+		<string>Also, make sure you lift the fog so the boat is visible.</string>
+	</array>
+	<key>demoLevel2Audio</key>
+	<array/>
+	<key>demoLevel2Visual</key>
+	<array>
+		<string>After you have completed five reaches, you will see the boat you will use to travel.</string>
+		<string>Try to create a boat that is straight and smooth, so it can travel easily.</string>
+	</array>
+	<key>demoTorso</key>
+	<array>
+		<string>If you bend forward too much while reaching, you will hear this sound:</string>
+		<string>slnc[[500]]</string>
+		<string>This is an indicator to keep your body back while you reach.</string>
+	</array>
+	<key>markerLost</key>
+	<array>
+		<string>Sorry, the system can&apos;t see your [[emph+]]wrist [[emph-]]marker. [[slnc 500]]</string>
+		<string>Please return your wrist to the rest pad, 
+then press the button when you&apos;re ready.</string>
+	</array>
+</dict>
+</plist>

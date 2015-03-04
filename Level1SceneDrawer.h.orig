@@ -1,0 +1,57 @@
+//
+//  Level1SceneDrawer.h
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 8/22/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "Transform.h"
+#import <Foundation/Foundation.h>
+#import "DashHeaders.h"
+#import "BoatController.h"
+#import "Level1WaterController.h"
+#import "SceneTransitionController.h"
+#import "VisualFeedback.h"
+#import "SceneTransitionController.h"
+#import "PathController.h"
+
+
+@interface Level1SceneDrawer : Transform
+
+-(void) setVisualFeedback:(VisualFeedback *) f;
+
+@property(retain) SceneTransitionController * sceneTransitionController;
+@property(retain) Level1WaterController * level1WaterController;
+@property(retain) VisualFeedback * gVisualFeedback;
+@property(retain) AnalysisFeatures * analysisFeatures;
+@property(retain) VFAnalysisFrame * currentFrame;
+@property(retain) NSMutableDictionary * sceneTransitionDictionary;
+@property(retain) PathController * path; 
+
+@property(retain) Texture2d * boatTextureCenter;
+@property(retain) Texture2d * fogTexture;
+
+@property(retain) DTime *	timekeeper;
+
+@property(assign) float fogOpacity;
+
+@property(assign) float boatTransX;
+@property(assign) float boatTransY;
+@property(assign) float boatTransZ;
+@property(assign) float boatRotX;
+@property(assign) float boatRotY;
+@property(assign) float boatRotZ;
+@property(assign) float boatOpacity;
+
+
+@property(assign)  float testErrorValue;
+
+@property(assign) BOOL drawPlotOnly;
+
+@property(assign) BOOL receivedMAData;
+
+@end
+
+
+

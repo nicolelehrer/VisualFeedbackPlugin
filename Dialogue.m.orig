@@ -1,0 +1,476 @@
+//
+//  Dialogue.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 6/26/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "Dialogue.h"
+
+@implementation Dialogue
+
+@synthesize lightIndicatorMid = _lightIndicatorMid;
+@synthesize orderLeftRight = _orderLeftRight;
+
+@synthesize rightToLeft = _rightToLeft;
+@synthesize fadeUpLight = _fadeUpLight;
+@synthesize lightOpacity = _lightOpacity;
+
+@synthesize sceneOpacity = _sceneOpacity;
+@synthesize textTransX = _textTransX;
+@synthesize textTransY = _textTransY;
+@synthesize textTransZ = _textTransZ;
+@synthesize dialogueIntensity = _dialogueIntensity;
+@synthesize imageIDs = _imageIDs;
+@synthesize dialogueContents = _dialogueContents;
+@synthesize dialogueKey = _dialogueKey;
+@synthesize dialogueContentsPList = _dialogueContentsPList;
+@synthesize dialogueDictionary = _dialogueDictionary;
+@synthesize gVFAdaptationDelegate = _gVFAdaptationDelegate;
+@synthesize sceneTransitionController = _sceneTransitionController;
+
+@synthesize tableTexture = _tableTexture;
+
+@synthesize coneTexture0 = _coneTexture0;
+@synthesize virtualTexture0 = _virtualTexture0;
+@synthesize buttonTexture0 = _buttonTexture0;
+@synthesize liftOnTableTexture0 = _liftOnTableTexture0;
+@synthesize liftOffTableTexture0 = _liftOffTableTexture0;
+
+@synthesize coneTexture1 = _coneTexture1;
+@synthesize virtualTexture1 = _virtualTexture1;
+@synthesize buttonTexture1 = _buttonTexture1;
+@synthesize liftOnTableTexture1 = _liftOnTableTexture1;
+@synthesize liftOffTableTexture1 = _liftOffTableTexture1;
+
+@synthesize coneTexture2 = _coneTexture2;
+@synthesize virtualTexture2 = _virtualTexture2;
+@synthesize buttonTexture2 = _buttonTexture2;
+@synthesize liftOnTableTexture2 = _liftOnTableTexture2;
+@synthesize liftOffTableTexture2 = _liftOffTableTexture2;
+
+@synthesize lightIndicatorIps = _lightIndicatorIps;
+@synthesize orderRightLeft = _orderRightLeft;
+@synthesize didReact = _didReact;
+
+@synthesize targetObjectTextures = _targetObjectTextures;
+
+
+@synthesize gVisualFeedback = _gVisualFeedback;
+
+@synthesize synth = _synth;
+@synthesize audioPlayer = _audioPlayer;
+
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent
+{
+	ReturnNilIfObjectIsNil( aName );
+	ReturnNilIfObjectIsNil( aParent );
+	
+	logDebug( @"Dialogue.createWithName( %@ ) parent( %@ )", aName, aParent.name );
+	Dialogue * node = [[Dialogue alloc] initWithName:aName parent:aParent];
+	ReturnNilIfObjectIsNil( node );
+    
+	return node;
+}
+
+
+
+#pragma mark ---- initializers  ----
+- (id) initWithName:(NSString *)aName parent:(Node *)aParent
+{
+	self = [super initWithName:aName parent:aParent];
+    if (self) {
+        
+		        
+		
+		self.dialogueContents = nil;
+		self.imageIDs = nil;
+		
+        
+		self.dialogueContentsPList = [[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent: @"/dialogueText.plist"];				
+        
+		self.dialogueKey = @"0";
+		
+		[self loadDialoguePListIntoArray];
+		
+		self.sceneOpacity = 0.0;
+        
+        [self createTextures];
+        
+        [self createSceneManagementObject];
+        
+        [self initSpeakObjects];
+        
+        self.sceneTransitionController.useTimeOut = NO;
+        self.sceneTransitionController.timeOutInSeconds = 5;
+}
+	
+	return self;
+}
+
+-(void) createTextures
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    
+    self.lightIndicatorIps = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/lightIpsilateral.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+     self.orderRightLeft = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/orderRightLeft.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    
+    self.lightIndicatorMid = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/lightMidline.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+    
+    self.orderLeftRight = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/orderLeftRight.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    
+	self.tableTexture = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/table.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+	
+    self.virtualTexture0 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/cone0.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+	self.virtualTexture1 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/cone1.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+	self.virtualTexture2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/cone2.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    self.coneTexture0 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/virtual0.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+	self.coneTexture1 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/virtual1.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+	self.coneTexture2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/dialogue/virtual2.png"] target:GL_TEXTURE_RECTANGLE_ARB];
+
+    self.targetObjectTextures = [NSArray arrayWithObjects: self.virtualTexture0, self.virtualTexture1, self.virtualTexture2,
+                                                           self.coneTexture0, self.coneTexture1, self.coneTexture2, nil];
+	
+}
+
+
+-(void) createSceneManagementObject
+{
+   self.sceneTransitionController = [[SceneTransitionController alloc] initWithStartValue:0 andEndValue:1 andDurationInSec:1];    
+}
+
+-(void) manageSceneTransition
+{   
+    [self.sceneTransitionController updateSceneIDWith:self.gVisualFeedback.adaptationDelegate.scenario];
+    
+    self.sceneOpacity = [self.sceneTransitionController animateOpacityForSceneID:9];
+}
+
+
+
+- (void) loadDialoguePListIntoArray
+{
+	self.dialogueDictionary = [NSDictionary dictionaryWithContentsOfFile:self.dialogueContentsPList];
+    
+	if (self.dialogueDictionary == nil)
+		NSLog( @"dialogueDictionary is nil");	
+    //	NSLog( @"loaded %d componenets from dialogueDictionary", [dialogueDictionary count] );
+	
+}
+
+
+- (void) updateDialogueNumber:(int)dialogueNum
+{	
+	if (dialogueNum < [self.dialogueDictionary count]) {									
+        //check to see if dialogue number exists in pList
+		
+		self.dialogueKey = [[NSNumber numberWithInt:dialogueNum] stringValue];
+
+        //convert dialogue number from int to string to use valueForKey
+	}
+	else {
+        
+		self.dialogueKey = @"0";
+		NSLog(@"bad dialogue number");
+	}
+	
+	self.dialogueContents = [self.dialogueDictionary valueForKey:self.dialogueKey];
+    
+//	NSLog(@"%@", [self.dialogueContents objectAtIndex:0]);
+//	NSLog(@"%@", [self.dialogueContents objectAtIndex:1]);
+//	NSLog(@"%@", [self.dialogueContents objectAtIndex:2]);
+
+    //grab array with the approppriate content based on dialogueKey
+	
+}
+
+
+-(void) glQuadCallWithHeight:(float) imageHeight andWidth:(float)imageWidth
+{
+    
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+    //	
+    //    float adjust = [self.dTimer time]/100;
+    
+	glTexCoord3f(0.0, 0.0, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 0.0, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 1.0, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0, 1.0, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+    
+	glEnd();
+}
+
+
+-(void) drawStaticTable 
+{
+    glPushMatrix();
+    
+    float scaleUP = 5;
+    float imageWidth = scaleUP*908;
+    float imageHeight = scaleUP*528;
+    
+    glEnable( GL_TEXTURE_RECTANGLE_ARB );
+    
+    glColor4f(1, 1, 1, self.sceneOpacity);
+    
+    [self.tableTexture bindTexture];
+    
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+
+
+-(void) drawLight 
+{
+    glPushMatrix();
+    
+    float scaleUP = 5;
+    float imageWidth = scaleUP*908;
+    float imageHeight = scaleUP*528;
+    
+    glEnable( GL_TEXTURE_RECTANGLE_ARB );
+    
+     
+    if (self.fadeUpLight) {
+        if(self.lightOpacity<1)
+        {
+            self.lightOpacity = self.lightOpacity+.05;
+            
+        }
+        if(self.lightOpacity>=1)
+        {
+            self.lightOpacity = 1.0;
+        }
+        
+    }
+   else {
+       if(self.lightOpacity > 0)
+       {
+           self.lightOpacity = self.lightOpacity-.05;
+           
+       }
+       
+       if(self.lightOpacity<=0)
+       {
+           self.lightOpacity = 0;
+       }    
+   }
+    
+    glColor4f(1, 1, 1, self.sceneOpacity*self.lightOpacity);
+    
+    if (self.rightToLeft) {
+        
+        [self.lightIndicatorIps bindTexture];
+    }
+    else {
+        [self.lightIndicatorMid bindTexture];
+    } 
+
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    
+    if(self.didReact)
+    {
+    
+        glColor4f(1, 1, 1, self.sceneOpacity*(1-self.lightOpacity));
+    
+        if (self.rightToLeft) {
+
+            [self.orderRightLeft bindTexture];
+        }
+        else {
+            [self.orderLeftRight bindTexture];
+        }
+        
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    }
+    
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+
+
+-(void) initSpeakObjects
+
+{
+
+    self.synth = [[NSSpeechSynthesizer alloc] init]; //start with default voice
+    //synth is an ivar
+    //        [self.synth setDelegate:self.synth];
+    
+    
+    //        NSURL* file = [NSURL URLWithString:[resourcesPath stringByAppendingPathComponent: @"/sounds/test.mp3"]];
+    //        
+    //        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:file error:nil];
+    //        [audioPlayer prepareToPlay];
+    
+
+
+}
+
+
+- (void)speak
+{
+    
+     NSString *text = @"Good morning Thanassis.  You look well. Have you been working out?  How about that soccer match yesterday?";
+
+//    //displaying voice names        
+//     int i;
+//     
+//     int num = [[NSSpeechSynthesizer availableVoices] count];
+//
+//     for( i =0; i<num; i++) {
+//    
+//       NSLog(@"%@", [[NSSpeechSynthesizer availableVoices] objectAtIndex:i] );
+//     
+//     }
+     
+     NSString *voiceID =[[NSSpeechSynthesizer availableVoices] objectAtIndex:21];
+    [self.synth setVoice:voiceID];
+     //need to slow down rate a bit, 
+    [self.synth startSpeakingString:text];
+      
+     
+    
+    if ([self.audioPlayer isPlaying]) {
+        [self.audioPlayer pause];
+    } else {
+        [self.audioPlayer play];
+    }
+    
+    
+    
+}
+
+//- (void)speechSynthesizer:(NSSpeechSynthesizer *)sender didFinishSpeaking:(BOOL)finishedSpeaking
+//{
+//    [_textToSpeechExampleTextView setSelectedRange:_orgSelectionRange]; // Set selection length to zero.
+//    [_textToSpeechExampleSpeakButton setTitle:@"Start Speaking"];
+//    [_saveButton setTitle:@"Save As File..."];
+//    [_textToSpeechExampleSpeakButton setEnabled:YES];
+//    [_saveButton setEnabled:YES];
+//    [_voicePop setEnabled:YES];
+//}
+
+
+-(void) drawTargetWithType:(NSString*)targetType WithLocation:(NSString*)targetLocation WithOrder:(NSString*)targetOrder
+{
+    int targetID;
+    float targetLocX;
+    float targetLocY;
+        
+    if (targetType == @"virtual") {
+        targetID = 0;
+    }
+    
+    if (targetType == @"cone") {
+        targetID = 1;
+    }
+    
+    int locationID;
+    
+    if (targetLocation == @"midline") {
+        locationID = 0;
+        targetLocX = 0; 
+        targetLocY = 0;
+    }
+    if (targetLocation == @"ipsilateral") {
+        locationID = 1;
+        targetLocX = 1000; 
+        targetLocY = 0;
+    }
+    if (targetLocation == @"right") {
+        locationID = 2;
+        targetLocX = 2000; 
+        targetLocY = 0;
+    }
+    
+    int selectedTarget = 3*targetID + locationID;
+    
+    Texture2d * selectedTexture = [self.targetObjectTextures objectAtIndex:selectedTarget];
+
+    float scaleUP = 5;
+    float imageWidth = scaleUP*246;
+    float imageHeight = scaleUP*212;
+
+    
+    glPushMatrix();
+    
+    glTranslated(targetLocX, targetLocY, 0);
+    
+    glEnable( GL_TEXTURE_RECTANGLE_ARB );
+    
+    glColor4f(1, 1, 1, self.sceneOpacity);
+    
+    [selectedTexture bindTexture];
+    
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    
+    glPopMatrix();
+}
+
+
+
+- (void) drawShape:(GraphicsState *)state
+{
+    [self manageSceneTransition];
+
+    if (self.sceneTransitionController.shouldDrawScene) {
+
+        glDisable(GL_LIGHTING);
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    
+        
+        [self updateDialogueNumber:self.gVisualFeedback.adaptationDelegate.dialogueNumber];
+        
+
+        [self drawStaticTable];
+//        [self drawTargetWithType:@"cone" WithLocation:@"midline" WithOrder:0];
+//        [self drawTargetWithType:@"cone" WithLocation:@"ipsilateral" WithOrder:0];
+//        [self drawTargetWithType:@"cone" WithLocation:@"right" WithOrder:0];
+        
+        [self drawLight];
+
+    }
+}
+
+- (void) setVisualFeedback:(VisualFeedback *)f
+{
+	self.gVisualFeedback = f;
+}
+
+
+- (void) dealloc
+{
+ 	[super dealloc];
+}
+
+
+@end
+

@@ -1,0 +1,325 @@
+//
+//  VFWindowController.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/8/11.
+//  Copyright 2011 ASU. All rights reserved.
+//
+
+#import "VFWindowController.h"
+#import "VisualFeedback.h"
+#import "VFAdaptationDelegate.h"
+#import "VFAnalysisFrame.h"
+#import "PathController.h"
+#import "MALevel2FeedbackData.h"
+#import "DemoDrawer.h"
+#import "TextController.h"
+#import "PathFeatures.h"
+
+ 
+@implementation VFWindowController
+
+@synthesize gVisualFeedback;
+@synthesize gVFAdaptationDelegate;
+@synthesize gVFAnalysis;
+@synthesize gVFDialogue;
+@synthesize gVFPostTrialScenario;
+@synthesize gVFPostSetScenario;
+@synthesize gVFPostSequenceScenario;
+@synthesize gTestScenario;
+@synthesize gAdaptationDebug;
+@synthesize level3WaterController;
+@synthesize gDemoDrawer;
+@synthesize changeString = _changeString;
+
+@synthesize stringIDLabelDisplay = _stringIDLabelDisplay;
+@synthesize debugStringIDInputField = _debugStringInputField;
+
+- (id) init
+{
+	self = [super init];
+	if (self != nil) {
+		
+        windowController = [[NSWindowController alloc] initWithWindowNibName:@"VisualFeedback" owner:self];
+        
+		[windowController window];
+        
+        
+        
+        
+		NSLog(@"display window created");
+	}	
+	return self;
+}
+
+- (void) dealloc
+{
+	[windowController release];
+	[super dealloc];
+}
+
+
+
+-(IBAction)updateTagQuality:(id)sender
+{
+   self.gVisualFeedback.analysis.currentFrame.visualTag = [tagQualityPopup indexOfSelectedItem];
+}
+
+- (IBAction)updateEnabledLevel:(id)sender
+{
+    self.gVisualFeedback.currEnabledLevel = [popUp indexOfSelectedItem];
+    [self killInActiveAnimation];
+//    [self.gVisualFeedback.adaptationDelegate updateCurrentState];
+}
+
+- (IBAction)updateFogTagQuality:(id)sender {
+    
+    if ([fogTagQualityPopup indexOfSelectedItem]==0){
+        self.gVisualFeedback.analysis.currentFrame.liftTag = vLiftSuccess;
+    }
+    
+    if ([fogTagQualityPopup indexOfSelectedItem]==1){
+        self.gVisualFeedback.analysis.currentFrame.liftTag = vLiftModerate;
+    }
+    
+    if ([fogTagQualityPopup indexOfSelectedItem]==2){
+        self.gVisualFeedback.analysis.currentFrame.liftTag = vLiftIncomplete;
+    }
+    
+    if ([fogTagQualityPopup indexOfSelectedItem]==3){
+        self.gVisualFeedback.analysis.currentFrame.liftTag = vBlank;
+    }
+
+
+}
+
+-(void) updatePopUpWithEnabledLevel
+{
+    [popUp selectItemAtIndex:self.gVisualFeedback.currEnabledLevel];
+}
+
+
+- (void)killInActiveAnimation{
+    
+    if ([popUp indexOfSelectedItem] != 0 || [popUp indexOfSelectedItem] != 1) {
+      [self.gVisualFeedback.level1SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    
+    if ([popUp indexOfSelectedItem] != 2) {
+        [self.gVisualFeedback.level2SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    
+    if ([popUp indexOfSelectedItem] != 3 || [popUp indexOfSelectedItem] != 4 ) {
+        [self.gVisualFeedback.level3SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    
+    if ([popUp indexOfSelectedItem] != 5) {
+        [self.gVisualFeedback.demoDrawer.sceneTransitionController shutDownAnimation];
+        [self.gVisualFeedback.demoDrawer.setUpTextController.synth stopSpeaking];
+    }
+
+}
+
+
+- (IBAction)targetSetupDemo:(id)sender {
+    
+//    [self.gVisualFeedback.demoDrawer tangibleConnectionDemo:nil];
+    [self.gVisualFeedback.adaptationDelegate  runTangibleConnectionDemo:nil];
+}
+
+- (IBAction)tangibleNotification:(id)sender {
+    
+    [self.gVisualFeedback.instructionDrawer tangibleSetup:nil];
+}
+
+
+- (void)updateKillInActiveAnimation{
+    
+    if (self.gVisualFeedback.currEnabledLevel != 0 || self.gVisualFeedback.currEnabledLevel != 1) {
+        [self.gVisualFeedback.level1SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    if (self.gVisualFeedback.currEnabledLevel != 2) {
+        [self.gVisualFeedback.level2SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    if (self.gVisualFeedback.currEnabledLevel != 3 || self.gVisualFeedback.currEnabledLevel != 4 ) {
+        [self.gVisualFeedback.level3SceneDrawer.sceneTransitionController shutDownAnimation];
+    }
+    if (self.gVisualFeedback.currEnabledLevel != 5) {
+        [self.gVisualFeedback.demoDrawer.sceneTransitionController shutDownAnimation];
+        [self.gVisualFeedback.demoDrawer.setUpTextController.synth stopSpeaking];
+    }
+}
+
+
+- (IBAction) showWindow:(id)sender {
+	[gVFHomeSystemWindow makeKeyAndOrderFront:self];
+}
+
+- (IBAction)level3TravelQuality:(id)sender {
+    self.gVisualFeedback.level3SceneDrawer.travelQuality = [travelQualPopUp indexOfSelectedItem];
+}
+
+-(void) updatePopUpWithTravelQual{
+    [travelQualPopUp selectItemAtIndex:self.gVisualFeedback.level3SceneDrawer.travelQuality];
+}
+
+
+- (IBAction)triggerDisplay1:(id)sender {
+    [self.gVisualFeedback.level1SceneDrawer.pathObject refreshTexureIDsAndScatterValues];
+    self.gVisualFeedback.level1SceneDrawer.sceneTransitionController.gTriggerLevelDisplay = YES;
+}
+
+- (IBAction)triggerDisplay2:(id)sender {
+    self.gVisualFeedback.level2SceneDrawer.sceneTransitionController.gTriggerLevelDisplay = YES;
+}
+
+- (IBAction)triggerDisplay3:(id)sender {
+    self.gVisualFeedback.level3SceneDrawer.sceneTransitionController.gTriggerLevelDisplay = YES;
+}
+
+- (IBAction)triggerDemo:(id)sender {
+    self.gVisualFeedback.demoDrawer.sceneTransitionController.gTriggerLevelDisplay = YES;
+}
+
+- (IBAction) toggleLiftSuccess:(BOOL)value;
+{
+    self.gVisualFeedback.analysis.currentFrame.liftSuccess = !self.gVisualFeedback.analysis.currentFrame.liftSuccess;    
+	NSLog(@"Lift success? %@",  self.gVisualFeedback.analysis.currentFrame.liftSuccess? @"YES":@"NO");
+    self.gVisualFeedback.analysis.currentFrame.stateFromAnalysis = stop;
+    
+}
+
+
+
+
+
+- (void) setVisualFeedback:(VisualFeedback *)f
+{
+	self.gVisualFeedback = f;
+	self.gVFAdaptationDelegate = gVisualFeedback.adaptationDelegate;
+	self.gVFAnalysis = gVisualFeedback.analysis;
+ 
+}
+
+
+
+-(IBAction)markerLostDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer markersLostDemo];
+}
+
+-(IBAction)helpDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"help"];
+}
+
+-(IBAction)kinectRestDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"kinectRest"];
+}
+
+
+-(IBAction)steps:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"steps"];
+}
+
+-(IBAction)kinectDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"kinectCalibrate"];
+}
+
+-(IBAction)kinectSuccessDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"kinectSuccess"];
+}
+
+-(IBAction)rightTargets:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"rightTarget"];
+}
+
+-(IBAction)welcomeDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"startUp"];
+}
+-(IBAction)wristMarkerDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"marker"];
+}
+-(IBAction)chairDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"chair"];
+}
+-(IBAction)sessionDoneDemo:(id)sender
+{
+    [self.gVisualFeedback.demoDrawer startUpDemo:@"sessionDone"];
+}
+
+- (IBAction)demoRTAudio:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoRTAudio"];
+}
+- (IBAction)demoRTVisual:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoRTVisual"];
+}
+- (IBAction)demoPostVisual:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoPostVisual"];
+}
+- (IBAction)demoPostVisualWithLift:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoPostVisualWithLift"];
+}
+- (IBAction)demoL2Audio:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoLevel2Audio"];
+}
+- (IBAction)demoL2Visual:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoLevel2Visual"];
+}
+- (IBAction)demoTorso:(id)sender {
+    [self.gVisualFeedback.demoDrawer feedbackDemo:nil withSelection:@"demoTorso"];
+}
+
+
+
+
+
+
+////////////////////////////////INSTRUCTION
+
+- (IBAction)runTaskInsruction:(id)sender {
+    
+    [self.gVisualFeedback.adaptationDelegate runTaskInstruction:self.debugStringIDInputField.stringValue];
+}
+- (IBAction)runFeedbackInstruction:(id)sender {
+    
+    [self.gVisualFeedback.adaptationDelegate runFeedbackInstruction:self.debugStringIDInputField.stringValue];
+}
+
+- (IBAction)enterText:(id)sender {
+}
+
+- (IBAction)debugUpdateFromAdaptation:(id)sender {
+    [self.gVisualFeedback.adaptationDelegate sendNotificationToPlayVideo];
+}
+
+
+///////////////////////NEWDEBUG
+-(IBAction)taskDemo:(id)sender
+{
+    //preset to cone
+    //    [self.gVisualFeedback.demoDrawer taskDemo:nil];
+    
+    [self.gVFAdaptationDelegate runTaskDemo:nil];
+    
+}
+-(IBAction)receiveNotifyMoveTarget:(id)sender
+{
+    [self.gVisualFeedback.analysis receiveNotifyMoveTarget:nil];
+    
+}
+
+
+
+
+
+
+@end

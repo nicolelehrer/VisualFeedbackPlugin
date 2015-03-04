@@ -1,0 +1,27 @@
+syntax: glob
+
+# OS Stuff
+.DS_Store
+Thumbs.db
+
+# build directory
+build/*
+
+# Mercurial stuff
+*.orig
+
+# XCode Stuff
+xcuserdata
+*.pbxuser
+*.perspective
+*.perspectivev?
+*.mode?v?
+project.xcworkspace/
+xcuserstate/
+*~.nib
+
+# making a change so we can do a push!
+textures/waterWood/postTrial/waterMidlineExtended\.png
+textures/waterWood/boatGrasp\.png
+textures/waterWood/boatGrasp\.psd
+textures/waterWood/completeGrasp\.png

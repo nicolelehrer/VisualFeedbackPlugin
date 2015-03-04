@@ -1,0 +1,95 @@
+//
+//  VFAnalysisFrame.h
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/7/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+//	Lists the relevant features recieved by Analysis via NSNotification from Motion Analysis plugin
+
+#import <Cocoa/Cocoa.h>
+#import "MAAppController.h"
+#import "MALevel2FeedbackData.h"
+#import "PathFeatures.h"
+
+@interface VFAnalysisFrame : NSObject {
+
+    //per frame notification 
+    MAReachStates stateFromAnalysis;
+
+    //post trial Notification
+    int binNumber;
+    
+ 	NSMutableArray * horizPosMagnitudes;
+ 	NSMutableArray * horizPosCategories;
+    NSMutableArray * horizNegMagnitudes;
+ 	NSMutableArray * horizNegCategories;
+    
+ 	NSMutableArray * vertPosMagnitudes;
+ 	NSMutableArray * vertPosCategories;	
+ 	NSMutableArray * vertNegMagnitudes;
+ 	NSMutableArray * vertNegCategories;	    
+    
+    NSMutableArray * horizDisplacementsOfPosVerticals;
+    NSMutableArray * horizDisplacementsOfNegVerticals;
+    
+    BOOL overShootPositive;
+    BOOL overShootNegative;
+
+    BOOL liftSuccess;
+        
+	//level 2
+	int visualPostSetTag;
+    VisualLevel2Content visualTag;
+    VisualLevel2Content liftTag;
+    
+    //level 3
+    TargetSelection firstTarget;
+
+}
+
+@property(assign) TargetSelection firstTarget;
+
+
+
+
+@property(assign) VisualLevel2Content visualTag;
+@property(assign) VisualLevel2Content liftTag;
+
+@property(assign) MAReachStates stateFromAnalysis;
+
+@property(assign) BOOL liftSuccess;
+
+@property(assign) int binNumber;
+
+@property(retain) NSMutableArray * horizPosMagnitudes;
+@property(retain) NSMutableArray * horizPosCategories;
+@property(retain) NSMutableArray * horizNegMagnitudes;
+@property(retain) NSMutableArray * horizNegCategories;
+
+@property(retain) NSMutableArray * vertPosMagnitudes;
+@property(retain) NSMutableArray * vertPosCategories;	
+@property(retain) NSMutableArray * vertNegMagnitudes;
+@property(retain) NSMutableArray * vertNegCategories;	    
+
+@property(retain) NSMutableArray * horizDisplacementsOfPosVerticals;
+@property(retain) NSMutableArray * horizDisplacementsOfNegVerticals;
+
+@property(assign) BOOL overShootPositive;
+@property(assign) BOOL overShootNegative;
+
+@property(assign) 	int visualPostSetTag;
+
+@property(assign) 	int manipQualityTargetID1;
+@property(assign) 	int manipQualityTargetID2;
+@property(assign) 	int manipQualityTargetID3;
+@property(assign) 	int manipQualityTargetID4;
+
+@property(assign)   BOOL enableFog;
+@property(assign)   float fogLevel;
+
+
+
+@property(retain) NSMutableArray * pathBins;
+
+@end

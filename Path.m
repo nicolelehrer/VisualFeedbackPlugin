@@ -1,0 +1,840 @@
+//
+//  Path.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 10/25/12.
+//
+//
+
+#import "Path.h"
+#import "PathFeatures.h"
+#import "TextureController.h"
+#import "WaterSheet.h"
+
+@interface Path()
+@property(retain) NSMutableArray * greenTextures;
+@property(retain) NSMutableArray * yellowTextures;
+@property(retain) NSMutableArray * redTextures;
+@property(retain) NSMutableArray * tallYellowTextures;
+@property(retain) NSMutableArray * tallRedTextures;
+@property(retain) NSMutableArray * shallowRedTextures;
+@property(retain) NSMutableArray * shallowYellowTextures;
+@property(retain) NSMutableArray * textureIDs;
+@property(retain) NSMutableArray * scatterVals;
+@property(retain) NSMutableArray * rockSizes;
+@property(assign) float  heightToWidthRatio;
+@property(assign) float  ampHeightFactor;
+@property(assign) float positiveHorizontalMagnitude;
+@property(assign) float negativeHorizontalMagnitude;
+@property(assign) float positiveVerticalMagnitude;
+@property(assign) float negativeVerticalMagnitude;
+@property(assign) float positiveHorizontalCategory;
+@property(assign) float negativeHorizontalCategory;
+@property(assign) float positiveVerticalCategory;
+@property(assign) float negativeVerticalCategory;
+@property(assign) float horizontalComponentForPositiveVertical;
+@property(assign) float horizontalComponentForNegativeVertical;
+@property(assign) float colorCategoryForCompositeError;
+@property(assign) float xComponentForCompositeError;
+@property(assign) float rocksUnderWaterRot;
+@property(assign) float erroAmplifier;
+@property(assign) float erroAmplifier2;
+@property(assign) float erroAmplifier3;
+@end
+
+@implementation Path
+@synthesize pathBins = _pathBins;
+@synthesize greenTextures = _greenTextures;
+@synthesize yellowTextures = _yellowTextures;
+@synthesize tallYellowTextures = _tallYellowTextures;
+@synthesize tallRedTextures = _tallRedTextures;
+@synthesize shallowYellowTextures = _shallowYellowTextures;
+@synthesize shallowRedTextures = _shallowRedTextures;
+@synthesize redTextures = _redTextures;
+@synthesize scatterVals = _scatterVals;
+@synthesize textureIDs = _textureIDs;
+@synthesize pathSlope = _pathSlope;
+@synthesize pathZprimeSpread = _pathZprimeSpread;
+@synthesize rockSizes = _rockSizes;
+@synthesize binNumber = _binNumber;
+@synthesize transX = _transX;
+@synthesize transY = _transY;
+@synthesize transZ = _transZ;
+@synthesize opacity = _opacity;
+@synthesize scatterMagnitude = _scatterMagnitude;
+@synthesize heightToWidthRatio = _heightToWidthRatio;
+@synthesize ampHeightFactor = _ampHeightFactor;
+@synthesize positiveHorizontalMagnitude = _positiveHorizontalMagnitude;
+@synthesize negativeHorizontalMagnitude = _negativeHorizontalMagnitude;
+@synthesize positiveVerticalMagnitude = _positiveVerticalMagnitude;
+@synthesize negativeVerticalMagnitude = _negativeVerticalMagnitude;
+@synthesize positiveHorizontalCategory = _positiveHorizontalCategory;
+@synthesize negativeHorizontalCategory = _negativeHorizontalCategory;
+@synthesize positiveVerticalCategory = _positiveVerticalCategory;
+@synthesize negativeVerticalCategory = _negativeVerticalCategory;
+@synthesize horizontalComponentForPositiveVertical = _horizontalComponentForPositiveVertical;
+@synthesize horizontalComponentForNegativeVertical = _horizontalComponentForNegativeVertical;
+@synthesize xComponentForCompositeError = _xComponentForCompositeError;
+@synthesize colorCategoryForCompositeError = _colorCategoryForCompositeError;
+@synthesize underWaterRock = _underWaterRock;
+@synthesize rocksUnderWaterRot = _rocksUnderWaterRot;
+@synthesize rotX = _rotX;;
+@synthesize rotY = _rotY;
+@synthesize rotZ = _rotZ;
+@synthesize erroAmplifier = _erroAmplifier;
+@synthesize erroAmplifier2 = _erroAmplifier2;
+@synthesize erroAmplifier3 = _erroAmplifier3;
+
+-(id) init
+{
+    self = [super init];
+    if (self!=nil){
+        
+        self.binNumber = 20;
+        
+        [self createdPathFeaturesArray];
+        [self loadTexturesIntoArrays];
+        [self generateRandomTexureIDsAndScatterValues];
+        
+     
+        self.underWaterRock = [WaterSheet createWithName:@"UnderWaterObjects" parent:[Dash root] withGridDimsX:16 andY:16 withShaderName:@"WavesLevel1"];
+        
+        self.underWaterRock.ampX = 85;
+        self.underWaterRock.ampY = 2.631579;
+        
+        self.underWaterRock.freqX = 284.55;
+        self.underWaterRock.freqY = .2105;
+        
+        self.underWaterRock.timeFactorX = 1;
+        self.underWaterRock.timeFactorY = 5;
+        
+        self.underWaterRock.useHeightCalc = 0;
+        self.underWaterRock.opacity = 1.0;
+        
+        self.underWaterRock.scaledX = 1;
+        self.underWaterRock.scaledY = 1;
+        self.underWaterRock.scaledZ = 1;
+        
+        
+        self.underWaterRock.rotX = 0;//-19;
+        
+        self.erroAmplifier = 1500;
+        self.erroAmplifier2 = 2000;
+        
+//        //red
+//        self.underWaterRock.blueValue = .24;
+//        self.underWaterRock.greenValue = .23;
+//        self.underWaterRock.redValue = .65;
+//        self.underWaterRock.opacityFactor = .2;
+//        
+//
+//        //yellow
+//        self.underWaterRock.blueValue = .53;
+//        self.underWaterRock.greenValue = 1;
+//        self.underWaterRock.redValue = 1;
+//        self.underWaterRock.opacityFactor = .33;
+
+
+    }
+    return self;
+}
+
+
+-(void) createdPathFeaturesArray
+{
+    self.pathBins = [[NSMutableArray alloc] initWithCapacity:self.binNumber];
+    int i;
+    for(i=0; i<20; i++){
+        PathFeatures * temp = [[PathFeatures alloc] init];
+        [self.pathBins addObject:temp];
+    }
+}
+
+
+-(Texture2d*)loadImageWithName:(NSString*)imageName toTargetType:(GLenum)textureTarget
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSString * fileName = [@"/textures/level1/rocks/" stringByAppendingPathComponent:imageName];
+    
+    return [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:fileName] target:textureTarget];
+}
+
+-(void) loadTexturesIntoArrays
+{
+    int numTexts = 6;
+    
+    self.greenTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.redTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.yellowTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.tallYellowTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.tallRedTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.shallowYellowTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+    self.shallowRedTextures  = [[NSMutableArray alloc] initWithCapacity:numTexts];
+        
+    int i;
+    NSString* imageName;
+    
+    for (i = 0; i<numTexts; i++) {
+        
+        imageName =  [[@"/greens/" stringByAppendingString:[@"g" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.greenTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_2D]];
+        
+        imageName =  [[@"/reds/" stringByAppendingString:[@"r" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.redTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_2D]];
+        
+        imageName =  [[@"/yellows/" stringByAppendingString:[@"y" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.yellowTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_2D]];
+        
+        imageName =  [[@"/tallYellows/" stringByAppendingString:[@"ty" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.tallYellowTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_2D]];
+     
+        imageName =  [[@"/tallReds/" stringByAppendingString:[@"tr" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.tallRedTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_2D]];
+        
+        imageName =  [[@"/shallowReds/" stringByAppendingString:[@"sr" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.shallowRedTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_RECTANGLE_ARB]];
+
+        imageName =  [[@"/shallowYellows/" stringByAppendingString:[@"sy" stringByAppendingFormat:@"%i", i]] stringByAppendingString:@".png"];
+        [self.shallowYellowTextures addObject:[self loadImageWithName:imageName toTargetType:GL_TEXTURE_RECTANGLE_ARB]];
+
+        
+    }
+}
+
+-(void) generateRandomTexureIDsAndScatterValues
+{
+    int size = self.binNumber*8;
+    self.textureIDs = [[NSMutableArray alloc] initWithCapacity:size];
+    self.scatterVals = [[NSMutableArray alloc] initWithCapacity:size];
+    
+	int i;
+	for( i = 0; i < size; i++ ) {
+		[self.textureIDs addObject:[NSNumber numberWithInt:rand() % 6]];
+        [self.scatterVals addObject:[NSNumber numberWithFloat:(rand() % 800*(rand() % 2 ? 1 : -1))]];
+    }
+}
+
+-(void) refreshTexureIDsAndScatterValues
+{
+    int size = self.binNumber*8;
+	int i;
+	for( i = 0; i < size; i++ ) {
+		[self.textureIDs replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:rand() % 6]];
+        [self.scatterVals replaceObjectAtIndex:i withObject:[NSNumber numberWithFloat:rand() % 800*(rand() % 2 ? 1 : -1)]];
+    }
+}
+
+-(float)calcRocksScaleAtIndex:(int)i WithScaleZoneType:(int)scaleID
+{
+    float scaleZone1;
+	float scaleZone2;
+	float scaleZone3;
+	float scaleZone4;
+	float scaleZone5;
+	float scaleZone6;
+	float scaleZone7;
+	float scaleZone8;
+    
+    if(scaleID == 0) {          //for efficient path
+        scaleZone1=1.535047;
+        scaleZone2=1.373239;
+        scaleZone3=1.424766;
+        scaleZone4=1.228505;
+        scaleZone5=1.4507042;
+        scaleZone6=1.25;
+    }
+    else {                       //for deviated path
+        scaleZone1=1.535047 +.5;
+        scaleZone2=1.373239 +.5;
+        scaleZone3=1.324766 +.6;
+        scaleZone4=1.240654 +.5;
+        scaleZone5=1.133803 +.9;
+        scaleZone6=1.030374 +.9;
+        scaleZone7=1.030374 +.8;
+        scaleZone8=1.030374 +.8;
+    }
+    
+    float factor = 1.0;
+    
+    if (i<=self.binNumber/6){
+        factor = scaleZone1;
+    }
+    else if (i>self.binNumber/6 && i<=self.binNumber*2/6){
+        factor = scaleZone2;
+    }
+    else if (i>self.binNumber*2/6 && i<=self.binNumber*3/6){
+        factor = scaleZone3;
+    }
+    else if (i>self.binNumber*3/6 && i<=self.binNumber*4/6){
+        factor = scaleZone4;
+    }
+    else if (i>self.binNumber*4/6 && i<=self.binNumber*5/6){
+        factor = scaleZone5;
+    }
+    else {
+        factor = scaleZone6;
+    }
+    return (.84*factor);
+}
+
+-(void) drawQuadWithWidth:(int)width AndHeight:(int)height AtIndex:(int)i WithHorizontalOffset:(float)horizontalShift
+{
+	float z = 0;
+    
+	glBegin(GL_QUADS);
+	
+	glTexCoord3f(0.0, 0.0, z);
+	glVertex3f(-width/2-i*self.pathZprimeSpread*self.pathSlope+horizontalShift, -height/2+i*self.pathZprimeSpread, 0.0);
+	
+	glTexCoord3f(1.0, 0.0, z);
+	glVertex3f( width/2-i*self.pathZprimeSpread*self.pathSlope+horizontalShift, -height/2+i*self.pathZprimeSpread, 0.0);
+	
+	glTexCoord3f(1.0, 1.0, z);
+	glVertex3f( width/2-i*self.pathZprimeSpread*self.pathSlope+horizontalShift, height/2+i*self.pathZprimeSpread, 0.0);
+	
+	glTexCoord3f(0.0, 1.0, z);
+	glVertex3f(-width/2-i*self.pathZprimeSpread*self.pathSlope+horizontalShift, height/2+i*self.pathZprimeSpread, 0.0);
+	
+	glEnd();
+}
+
+
+
+-(void) drawTexturesInPath
+{
+    glDisable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_LIGHTING);
+
+    glColor4f(1, 1, 1, self.opacity);
+    
+    glPushMatrix();
+    
+    glTranslated(self.transX, self.transY, self.transZ);
+    glRotated(self.rotX, 1, 0, 0);
+    
+    glEnable(GL_TEXTURE_2D);
+    
+    int i;
+    for (i = self.binNumber-1; i >= 0; i--)  {
+        
+        [self updateValuesAtIndex:i];
+        
+        if (self.positiveHorizontalCategory == 0 && self.negativeHorizontalCategory == 0 && self.positiveVerticalCategory  == 0 && self.negativeVerticalCategory == 0) {
+            
+            [self drawRockPairAtIndex:i WithTextureArray:self.greenTextures];
+        }
+    }
+    
+  
+
+    //place a green rock at the beginning and at the end to fix start/end
+//    [self drawRockPairAtIndex:0 WithTextureArray:self.greenTextures];
+    [self drawRockPairAtIndex:20 WithTextureArray:self.greenTextures];
+    
+    glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
+}
+
+-(void) drawFirstRocks //separated out so can draw on top of vertical 
+{
+    glDisable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_LIGHTING);
+    
+    glColor4f(1, 1, 1, self.opacity);
+    
+    glPushMatrix();
+    
+    glTranslated(self.transX, self.transY, self.transZ);
+    glRotated(self.rotX, 1, 0, 0);
+    
+    glEnable(GL_TEXTURE_2D);
+    
+        [self drawRockPairAtIndex:0 WithTextureArray:self.greenTextures];
+    
+    glDisable(GL_TEXTURE_2D);
+    
+	glPopMatrix();
+}
+
+
+
+-(void) drawRockPairAtIndex:(int)i WithTextureArray:(NSArray*)textureArray 
+{
+    float scaleFactor = [self calcRocksScaleAtIndex:i WithScaleZoneType:0];
+    float rockScaleX = 1000*scaleFactor;
+    float rockScaleY = 1663.4*scaleFactor;
+    
+    float scatterMagnitude = .25;
+    
+    if (i<0) i=0;
+    
+    
+    glColor4f(1, 1, 1, self.opacity);
+
+    float horizontalShift = [[self.scatterVals objectAtIndex:i] floatValue]*scatterMagnitude;
+    int textID = [[self.textureIDs objectAtIndex:i] intValue];
+    
+    [[textureArray objectAtIndex:textID] bind];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2 WithHorizontalOffset:horizontalShift];
+    [[textureArray objectAtIndex:textID] loose];
+
+    
+    horizontalShift = [[self.scatterVals objectAtIndex:i] floatValue]*scatterMagnitude;
+    textID = [[self.textureIDs objectAtIndex:i+1] intValue];
+    
+    [[textureArray objectAtIndex:textID] bindTexture];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2-1 WithHorizontalOffset:horizontalShift];
+    [[textureArray objectAtIndex:textID] loose];
+
+    
+    if (i % 2 != 0 && i > 0 && i < 20) {
+        
+        glColor4f(1, 1, 1, self.opacity/2.5);
+
+        horizontalShift = [[self.scatterVals objectAtIndex:i*2] floatValue]*scatterMagnitude-200;
+        textID = [[self.textureIDs objectAtIndex:i*2] intValue];
+       
+        [[textureArray objectAtIndex:textID] bindTexture];
+        [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2 WithHorizontalOffset:horizontalShift];
+        [[textureArray objectAtIndex:textID] loose];
+
+        
+        horizontalShift = [[self.scatterVals objectAtIndex:i*2] floatValue]*scatterMagnitude+200;
+        textID = [[self.textureIDs objectAtIndex:i*2+1] intValue];
+        
+        [[textureArray objectAtIndex:textID] bindTexture];
+        [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2-1 WithHorizontalOffset:horizontalShift];
+        [[textureArray objectAtIndex:textID] loose];
+
+    }
+    
+}
+
+-(void) drawUnderWaterRockPairAtIndex:(int)i WithTextureArray:(NSArray*)textureArray withHorizontalShift:(float)horizontalError withTextureAndScatterIndexFactor:(int)indexFactor
+{
+//    float scaleFactor = [self calcRocksScaleAtIndex:i WithScaleZoneType:0];
+    float rockScaleX = .75;//1000*scaleFactor;
+    float rockScaleY = 1;//663.4*scaleFactor;
+    
+//    float scatterMagnitude = .25;
+    
+    if (i<0) i=0;
+    
+    float horizontalShift = [[self.scatterVals objectAtIndex:i*indexFactor] floatValue]*self.scatterMagnitude+horizontalError;
+    int textID = [[self.textureIDs objectAtIndex:i*indexFactor] intValue];
+    
+    [self.underWaterRock drawUnderWaterObjectWithTexture:[textureArray objectAtIndex:textID]
+                                              WithScaleX:rockScaleX
+                                              WithScaleY:rockScaleY
+                                           WithPositionX:(-rockScaleX/2-i*self.pathZprimeSpread*self.pathSlope+horizontalShift)
+                                           WithPositionY:(rockScaleY/2+2*i*self.pathZprimeSpread)
+                                           WithPositionZ:0
+                                           WithRotationX:self.rocksUnderWaterRot];
+}
+
+
+
+-(void) drawRockPairAtIndex:(int)i WithTextureArray:(NSArray*)textureArray withHorizontalShift:(float)horizontalError withTextureAndScatterIndexFactor:(int)indexFactor
+{
+    float scaleFactor = [self calcRocksScaleAtIndex:i WithScaleZoneType:1];
+    float rockScaleX = 1000*scaleFactor*.75;
+    float rockScaleY = 1663.4*scaleFactor*.75;
+    
+    if (i<0) i=0;
+    
+    float horizontalShift = [[self.scatterVals objectAtIndex:i*indexFactor] floatValue]*self.scatterMagnitude+horizontalError;
+    int textID = [[self.textureIDs objectAtIndex:i*indexFactor] intValue];
+    [[textureArray objectAtIndex:textID] bindTexture];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2 WithHorizontalOffset:horizontalShift];
+    
+    horizontalShift = [[self.scatterVals objectAtIndex:i*indexFactor+1] floatValue]*self.scatterMagnitude+horizontalError;
+    textID = [[self.textureIDs objectAtIndex:i*indexFactor+1] intValue];
+    [[textureArray objectAtIndex:textID] bindTexture];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2-1 WithHorizontalOffset:horizontalShift];
+}
+
+-(void) drawRockPairAtIndex:(int)i WithTextureArray:(NSArray*)textureArray withHorizontalShift:(float)horizontalError withTextureAndScatterIndexFactor:(int)indexFactor
+            withWidthFactor:(float)widthFactor andHeightFactor:(float)heightFactor
+{
+    float scaleFactor = [self calcRocksScaleAtIndex:i WithScaleZoneType:1];
+    float rockScaleX = 1000*scaleFactor*.75*widthFactor;
+    float rockScaleY = 1663.4*scaleFactor*.75*heightFactor;
+    
+    if (i<0) i=0;
+    
+    float horizontalShift = [[self.scatterVals objectAtIndex:i*indexFactor] floatValue]*self.scatterMagnitude+horizontalError;
+    int textID = [[self.textureIDs objectAtIndex:i*indexFactor] intValue];
+    [[textureArray objectAtIndex:textID] bindTexture];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2 WithHorizontalOffset:horizontalShift];
+    
+    horizontalShift = [[self.scatterVals objectAtIndex:i*indexFactor+1] floatValue]*self.scatterMagnitude+horizontalError;
+    textID = [[self.textureIDs objectAtIndex:i*indexFactor+1] intValue];
+    [[textureArray objectAtIndex:textID] bindTexture];
+    [self drawQuadWithWidth:rockScaleX AndHeight:rockScaleY AtIndex:i*2-1 WithHorizontalOffset:horizontalShift];
+}
+
+
+-(void)updateValuesAtIndex:(int)i
+{
+    self.positiveHorizontalCategory = [[self.pathBins objectAtIndex:i] positiveHorizontalCategory];
+    self.negativeHorizontalCategory = [[self.pathBins objectAtIndex:i] negativeHorizontalCategory];
+    self.negativeHorizontalMagnitude = [[self.pathBins objectAtIndex:i] negativeHorizontalMagnitude];
+    self.positiveHorizontalMagnitude = [[self.pathBins objectAtIndex:i] positiveHorizontalMagnitude];
+    
+    self.positiveVerticalCategory = [[self.pathBins objectAtIndex:i] positiveVerticalCategory];
+    self.negativeVerticalCategory = [[self.pathBins objectAtIndex:i] negativeVerticalCategory];
+    self.positiveVerticalMagnitude = [[self.pathBins objectAtIndex:i] positiveVerticalMagnitude];
+    self.negativeVerticalMagnitude = [[self.pathBins objectAtIndex:i] negativeVerticalMagnitude];
+    
+    self.horizontalComponentForPositiveVertical = [[self.pathBins objectAtIndex:i] horizontalComponentForPositiveVertical];
+    self.horizontalComponentForNegativeVertical = [[self.pathBins objectAtIndex:i] horizontalComponentForNegativeVertical];
+}
+
+
+
+-(float) convertErrorToDrawingCoords:(float)errorMagnitude
+{
+    return (fabs(errorMagnitude)*.8+.5);
+}
+
+-(void) drawTexturesDisplacedInHorizontalAtIndex:(int)i
+{
+    glDisable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_LIGHTING);
+    
+    glColor4f(1, 1, 1, self.opacity);
+    glPushMatrix();
+    
+        glTranslated(self.transX, self.transY, self.transZ);
+        glRotated(self.rotX, 1, 0, 0);
+    
+    glEnable(GL_TEXTURE_2D);
+
+
+    if (self.negativeVerticalCategory == 0)
+    {
+        //positive horizontal error
+        if (self.positiveHorizontalCategory == 2) {
+             [self drawRockPairAtIndex:i WithTextureArray:self.redTextures withHorizontalShift:[self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude]*self.erroAmplifier withTextureAndScatterIndexFactor:1];
+             [self drawRockPairAtIndex:i WithTextureArray: self.redTextures withHorizontalShift:[self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude]*self.erroAmplifier2 withTextureAndScatterIndexFactor:2];
+        }
+        if (self.positiveHorizontalCategory == 1) {
+             [self drawRockPairAtIndex:i WithTextureArray:self.yellowTextures withHorizontalShift:[self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude]*self.erroAmplifier withTextureAndScatterIndexFactor:1];
+             [self drawRockPairAtIndex:i WithTextureArray: self.yellowTextures withHorizontalShift:[self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude]*self.erroAmplifier2 withTextureAndScatterIndexFactor:2];
+        }
+        
+        //negative horizontal error
+        if (self.negativeHorizontalCategory == 2) {
+             [self drawRockPairAtIndex:i WithTextureArray:self.redTextures withHorizontalShift:-[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude]*self.erroAmplifier withTextureAndScatterIndexFactor:1];
+             [self drawRockPairAtIndex:i WithTextureArray: self.redTextures withHorizontalShift:-[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude]*self.erroAmplifier2 withTextureAndScatterIndexFactor:2];
+        }
+        if (self.negativeHorizontalCategory == 1) {
+             [self drawRockPairAtIndex:i WithTextureArray:self.yellowTextures withHorizontalShift:-[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude]*self.erroAmplifier withTextureAndScatterIndexFactor:1];
+             [self drawRockPairAtIndex:i WithTextureArray: self.yellowTextures withHorizontalShift:-[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude]*self.erroAmplifier2 withTextureAndScatterIndexFactor:2];
+        }
+    }
+    glDisable(GL_TEXTURE_2D);
+
+    
+	glPopMatrix();
+}
+
+
+-(void)drawVerticalErrorAtIndex:(int)i
+      withVerticalErrorCategory:(float)verticalCategory
+          withVerticalMagnitude:(float)verticalMagnitude
+     withXValueForVerticalError:(float)xValueForVerticalError
+            withRedTextureArray:(NSMutableArray*)redTextureArray
+         withYellowTextureArray:(NSMutableArray*)yellowTextureArray
+{
+    self.xComponentForCompositeError = 0;
+    self.colorCategoryForCompositeError = 0;
+    
+    if (verticalCategory!=0 ) {
+        
+        if (xValueForVerticalError > 0 ) {
+            self.xComponentForCompositeError  = [self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude];
+            if (verticalCategory > self.positiveHorizontalCategory) {
+                self.colorCategoryForCompositeError = verticalCategory;
+            }
+            else{
+                self.colorCategoryForCompositeError = self.positiveHorizontalCategory;
+            }
+        }
+        else if (xValueForVerticalError < 0){
+            self.xComponentForCompositeError  = -[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude];
+            if (verticalCategory > self.negativeHorizontalCategory) {
+                self.colorCategoryForCompositeError = verticalCategory;
+            }
+            else{
+                self.colorCategoryForCompositeError = self.negativeHorizontalCategory;
+            }
+        }
+        else if (xValueForVerticalError == 0){
+            self.colorCategoryForCompositeError = verticalCategory;
+            self.xComponentForCompositeError  = 0;
+        }
+        
+    
+        float rockHeightFactor = fabsf(verticalMagnitude)*1.5+1; //why does height decrease with z prime - rethink autoscaling?
+        if (rockHeightFactor > 2.75) {
+            rockHeightFactor = 2.75;
+        }
+        float rockWidthFactor = rockHeightFactor/1.75;
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_LIGHTING);
+        
+        glColor4f(1, 1, 1, self.opacity);
+        
+        glPushMatrix();
+        
+        glTranslated(self.transX, self.transY+325.0, self.transZ);//shift up so rocks sit higher on water
+            glRotated(self.rotX, 1, 0, 0);
+        
+            glEnable(GL_TEXTURE_2D);
+
+        
+            if (self.colorCategoryForCompositeError == 2) {
+                                
+                float errorAmplifer = 1500*self.xComponentForCompositeError;;
+                
+//                [self drawRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:1 withWidthFactor:rockWidthFactor andHeightFactor:rockHeightFactor];
+                
+                errorAmplifer = 2000*self.xComponentForCompositeError;;
+                
+                [self drawRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:2 withWidthFactor:rockWidthFactor andHeightFactor:rockHeightFactor];
+                
+            }
+
+            if (self.colorCategoryForCompositeError == 1) {
+                
+               float errorAmplifer = 1500*self.xComponentForCompositeError;;
+                
+//                [self drawRockPairAtIndex:i WithTextureArray:yellowTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:1 withWidthFactor:rockWidthFactor andHeightFactor:rockHeightFactor];
+                
+                errorAmplifer = 2000*self.xComponentForCompositeError;;
+                
+                [self drawRockPairAtIndex:i WithTextureArray:yellowTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:2 withWidthFactor:rockWidthFactor andHeightFactor:rockHeightFactor];
+        
+            }
+
+            glDisable(GL_TEXTURE_2D);
+
+    	glPopMatrix();
+ 
+    }
+
+}
+
+
+
+-(void)drawUnderWaterRocksAtIndex:(int)i
+      withVerticalErrorCategory:(float)verticalCategory
+          withVerticalMagnitude:(float)verticalMagnitude
+     withXValueForVerticalError:(float)xValueForVerticalError
+            withRedTextureArray:(NSMutableArray*)redTextureArray
+         withYellowTextureArray:(NSMutableArray*)yellowTextureArray
+{
+    self.xComponentForCompositeError = 0;
+    self.colorCategoryForCompositeError = 0;
+    
+    if (verticalCategory!=0 ) {
+        
+        if (xValueForVerticalError > 0 ) {
+            self.xComponentForCompositeError  = [self convertErrorToDrawingCoords:self.positiveHorizontalMagnitude];;
+            if (verticalCategory > self.positiveHorizontalCategory) {
+                self.colorCategoryForCompositeError = verticalCategory;
+            }
+            else{
+                self.colorCategoryForCompositeError = self.positiveHorizontalCategory;
+            }
+        }
+        else if (xValueForVerticalError < 0){
+            self.xComponentForCompositeError  = -[self convertErrorToDrawingCoords:self.negativeHorizontalMagnitude];;
+            if (verticalCategory > self.negativeHorizontalCategory) {
+                self.colorCategoryForCompositeError = verticalCategory;
+            }
+            else{
+                self.colorCategoryForCompositeError = self.negativeHorizontalCategory;
+            }
+        }
+        else if (xValueForVerticalError == 0){
+//            self.colorCategoryForCompositeError = verticalCategory;
+//            category 3 - testing black coloration of rocks when there is no horizontal error
+            self.colorCategoryForCompositeError = 3;
+
+            self.xComponentForCompositeError  = 0;
+        }
+        
+        
+        float rockHeightFactor = fabsf(verticalMagnitude) + 1.0; //why does height decrease with z prime - rethink autoscaling?
+        if (rockHeightFactor > 2.75) {
+            rockHeightFactor = 2.75;
+        }
+//        float rockWidthFactor = rockHeightFactor/1.75;
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_LIGHTING);
+        
+        glColor4f(1, 1, 1, self.opacity);
+        
+        glPushMatrix();
+        
+        glTranslated(self.transX, self.transY, self.transZ);
+        glRotated(self.rotX, 1, 0, 0);
+        
+        
+        self.underWaterRock.timeOffsetX = i*10;
+        
+        if (self.colorCategoryForCompositeError == 2) {
+            
+            //red
+            self.underWaterRock.ampX = 55;
+//            self.underWaterRock.blueValue = .24;
+//            self.underWaterRock.greenValue = .23;
+//            self.underWaterRock.redValue = .65;
+//            self.underWaterRock.opacityFactor = .2;
+
+            self.underWaterRock.blueValue = 0;
+            self.underWaterRock.greenValue = 0;
+            self.underWaterRock.redValue = .25;
+            self.underWaterRock.opacityFactor = .1;
+            
+            float errorAmplifer = 1500*self.xComponentForCompositeError;
+                    
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:1];
+            glPopMatrix();
+            
+            errorAmplifer = 2000*self.xComponentForCompositeError;
+            
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:2];
+            glPopMatrix();
+            
+        }
+        
+        if (self.colorCategoryForCompositeError == 1) {
+            
+            //yellow
+            self.underWaterRock.ampX = 50;
+//            self.underWaterRock.blueValue = .53;
+//            self.underWaterRock.greenValue = 1;
+//            self.underWaterRock.redValue = 1;
+            self.underWaterRock.blueValue = 0.0;
+            self.underWaterRock.greenValue = .2;
+            self.underWaterRock.redValue = .2;
+
+            self.underWaterRock.opacityFactor = .1;
+            
+            float errorAmplifer = 1500*self.xComponentForCompositeError;;
+                    
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:yellowTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:1];
+            glPopMatrix();
+            
+            errorAmplifer = 2000*self.xComponentForCompositeError;;
+
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:yellowTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:2];
+            glPopMatrix();
+
+            
+        }
+        
+        if (self.colorCategoryForCompositeError == 3) {
+            
+            //"black"
+            self.underWaterRock.ampX = 55;
+            self.underWaterRock.blueValue = 0.0;
+            self.underWaterRock.greenValue = 0.0;
+            self.underWaterRock.redValue = 0.0;
+            self.underWaterRock.opacityFactor = .1;
+            
+            float errorAmplifer = 1500*self.xComponentForCompositeError;
+            
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:1];
+            glPopMatrix();
+            
+            errorAmplifer = 2000*self.xComponentForCompositeError;
+            
+            glPushMatrix();
+            [self drawUnderWaterRockPairAtIndex:i WithTextureArray:redTextureArray withHorizontalShift:errorAmplifer withTextureAndScatterIndexFactor:2];
+            glPopMatrix();
+            
+        }
+        
+        
+    	glPopMatrix();
+        
+    }
+    
+}
+
+
+
+-(void) drawErrorPathComponents
+{
+    int i;
+    for (i = self.binNumber-1; i >= 0; i--)  {
+        
+        [self updateValuesAtIndex:i];
+        
+        
+        glEnable( GL_TEXTURE_RECTANGLE_ARB );
+
+        [self drawUnderWaterRocksAtIndex:i
+             withVerticalErrorCategory:self.negativeVerticalCategory
+                 withVerticalMagnitude:self.negativeVerticalMagnitude
+            withXValueForVerticalError:self.horizontalComponentForNegativeVertical
+                   withRedTextureArray:self.shallowRedTextures
+                withYellowTextureArray:self.shallowYellowTextures];
+
+        glDisable( GL_TEXTURE_RECTANGLE_ARB );
+
+            [self drawTexturesDisplacedInHorizontalAtIndex:i];
+
+            
+//            [self drawVerticalErrorAtIndex:i
+//                 withVerticalErrorCategory:self.positiveVerticalCategory
+//                     withVerticalMagnitude:self.positiveVerticalMagnitude
+//                withXValueForVerticalError:self.horizontalComponentForPositiveVertical
+//                       withRedTextureArray:self.tallRedTextures
+//                    withYellowTextureArray:self.tallYellowTextures];
+        
+
+    }
+}
+
+-(void) drawVerticalErrorPathComponents
+{
+    int i;
+    for (i = self.binNumber-1; i >= 0; i--)  {
+        
+        [self updateValuesAtIndex:i];
+        
+        [self drawVerticalErrorAtIndex:i
+             withVerticalErrorCategory:self.positiveVerticalCategory
+                 withVerticalMagnitude:self.positiveVerticalMagnitude
+            withXValueForVerticalError:self.horizontalComponentForPositiveVertical
+                   withRedTextureArray:self.tallRedTextures
+                withYellowTextureArray:self.tallYellowTextures];
+        
+        
+    }
+}
+
+@end

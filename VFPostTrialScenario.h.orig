@@ -1,0 +1,165 @@
+//
+//  VFPostTrialScenario.h
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/7/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+
+#import <Cocoa/Cocoa.h>
+#import "Transform.h"
+
+@class VisualFeedback;
+@class VFAnalysisFrame;
+@class Texture2d;
+@class DAnimateFloat;
+@class Path;
+@class WaterScape;
+@class DTime;
+@class WaterSheet;
+
+@interface VFPostTrialScenario : Transform {
+    
+    WaterSheet * waterSheet;
+	VisualFeedback * gVisualFeedback;
+	VFAnalysisFrame * currentFrame;
+	Path * path;
+    Path * pathError2;
+
+    float nextOpacity;
+    float currentOpacity;
+    BOOL opacityIsDecreasing;
+    
+	Path * pathReflectionLeft;
+	Path * pathReflectionRight;
+	DTime *	timekeeper;
+    
+    Texture2d * tempSky;
+    Texture2d * fogTexture2;
+    Texture2d * fogTexture1;
+    
+
+	WaterScape * gWaterScape;
+    
+	Texture2d * waterTextureRight;
+    Texture2d * waterTextureLeft;
+	Texture2d * waterTextureCenter;
+
+	Texture2d * boatTextureRight;
+    Texture2d * boatTextureLeft;
+	Texture2d * boatTextureCenter;
+
+    Texture2d * paintOverlay;
+    
+	float sceneOpacity;	
+	DAnimateFloat * postTrialScenarioFadeAnimation;
+	BOOL didFinishAnimating;
+    
+    DAnimateFloat * animationDelay;
+    float animationDelayValue;
+	
+	float boatTransX;
+	float boatTransY;
+	float boatTransZ;
+	float boatRotX;
+	float boatRotY;
+	float boatRotZ;
+    
+    float fogOffsetTransX;
+    float fogOffsetTransY;
+    float fogOffsetTransZ;
+    
+    int boatTextureID;
+	int waterTextureID;
+    
+    int fogCategory;
+    
+    DTime * timeToDisplay;
+    
+    int binIndex;
+    
+    float fogOpacity;
+    float fogTranslateX;
+    float fogTranslateY;
+    
+    BOOL turnPlotOn;
+    BOOL turnOnAnalysis;
+    
+    
+    BOOL showRight;
+    BOOL showLeft;
+    BOOL showRightWithVertical;
+    BOOL showVertical;
+    BOOL showSCurve;
+}
+
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent;
+- (void) setVisualFeedback:(VisualFeedback *)f;
+-(void) showPreset;
+
+
+@property(retain) Texture2d * valleyOverlay;
+
+
+@property(assign) BOOL showRight;
+@property(assign) BOOL showLeft;
+@property(assign) BOOL showRightWithVertical;
+@property(assign) BOOL showVertical;
+@property(assign) BOOL showSCurve;
+
+@property(retain) WaterSheet * waterSheet;
+@property(retain) VisualFeedback * gVisualFeedback;
+@property(retain) VFAnalysisFrame * currentFrame;
+@property(retain) DAnimateFloat * postTrialScenarioFadeAnimation;
+@property(retain) DAnimateFloat * animationDelay;
+@property(assign) float animationDelayValue; 
+@property(retain) Path * path;
+@property(retain) Path * pathError2;
+
+@property(retain) Path * pathReflectionLeft;
+@property(retain) Path * pathReflectionRight;
+@property(retain) WaterScape * gWaterScape;
+
+@property(retain) Texture2d * boatTextureLeft;
+@property(retain) Texture2d * boatTextureCenter;
+@property(retain) Texture2d * boatTextureRight;
+@property(retain) Texture2d * fogTexture1;
+@property(retain) Texture2d * fogTexture2;
+
+@property(assign) BOOL didFinishAnimating;
+
+@property(assign) float sceneOpacity;
+
+
+@property(assign) int boatTextureID;
+@property(assign) int waterTextureID;
+@property(assign) int fogCategory;
+
+@property(assign) float boatTransX;
+@property(assign) float boatTransY;
+@property(assign) float boatTransZ;
+@property(assign) float boatRotX;
+@property(assign) float boatRotY;
+@property(assign) float boatRotZ;
+
+@property(assign) float fogOffsetTransX;
+@property(assign) float fogOffsetTransY;
+@property(assign) float fogOffsetTransZ;
+
+@property(retain) DTime * timeToDisplay;
+
+@property(assign) float nextOpacity;
+
+@property(assign) float currentOpacity;
+@property(assign) BOOL opacityIsDecreasing;
+
+@property(assign)     int binIndex;
+
+@property(assign)    float fogOpacity;
+@property(assign)    float fogTranslateX;
+@property(assign)    float fogTranslateY;
+
+@property(assign) BOOL turnPlotOn;
+@property(assign) BOOL turnOnAnalysis;
+@end

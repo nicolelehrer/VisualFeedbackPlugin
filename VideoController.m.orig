@@ -1,0 +1,266 @@
+//
+//  VideoController.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 2/7/13.
+//
+//
+
+#import "VideoController.h"
+#import "VFAdaptationDelegate.h"
+#import "Dash.h"
+#import "VisualFeedback.h"
+
+@interface VideoController()
+@property (assign) BOOL observerWasAdded;
+@property (retain) NSDictionary * instructionsDictionary;
+@property (assign) BOOL shouldSkip;
+@property (assign) BOOL shouldSendDoneNotification;
+
+@end
+
+@implementation VideoController
+
+@synthesize chair = _chair;
+@synthesize playerObjectsDictionary = _playerObjectsDictionary;
+@synthesize movieFileLookupDictionary = _movieFileLookupDictionary;
+@synthesize observerWasAdded = _observerWasAdded;
+@synthesize instructionsDictionary = _instructionsDictionary;
+@synthesize videoIsPlaying = _videoIsPlaying;
+@synthesize shouldSkip = _shouldSkip;
+@synthesize shouldSendDoneNotification = _shouldSendDoneNotification;
+
+static void *AVSPPlayerRateContext = &AVSPPlayerRateContext;
+
+
+- (id)init
+{
+	self = [super init];
+    if (self) {
+        
+        NSLog(@"videoController was created");
+        
+        [self createPlayerObjectsDictionary];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(doSomethingWhenStateUpdates:)
+                                                     name:@"CurrentState"
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(doSomethingIfSkipped:)
+                                                     name:@"Skip"
+                                                   object:nil];
+       
+        self.videoIsPlaying = NO;
+        self.shouldSendDoneNotification = YES;
+    }
+	return self;
+}
+
+
+-(void)playDemoAudio:(AVAudioPlayer *)player
+{
+    if ([player isPlaying]) {
+        [player pause];
+        [player setCurrentTime:0];
+    } else {
+        [player play];
+    }
+}
+
+
+-(void)doSomethingIfSkipped:(NSNotification*)notification
+{
+    
+    NSLog(@"should skip");
+    self.shouldSkip = YES;
+    
+    
+}
+
+-(void)updateMediaWithID:(NSString *)instructionID
+{
+    
+    
+    if ([instructionID isEqualToString:@"introMovie"] || [instructionID isEqualToString:@"targetsVideo"]) {
+        self.shouldSendDoneNotification = NO;
+    }
+    else{
+        self.shouldSendDoneNotification = YES;
+    }
+    
+    if (self.videoIsPlaying) {
+        [[[Dash dash]player] pause];
+        [[[Dash dash]player] seekToTime:kCMTimeZero];
+    }
+    
+    
+    //assumed should remove the observer everytime i create a new player?
+    
+    [self removeObserverBeforeNewVideoOrBackToOpenGL];
+    
+    NSString * textValue = [self.instructionsDictionary valueForKey:instructionID];
+    
+    if ([textValue isEqualToString:@"movie"]) {
+        
+        
+        
+        [[Dash dash] addObserver:self forKeyPath:@"player.rate" options:NSKeyValueObservingOptionNew context:AVSPPlayerRateContext];
+        
+        //            [[Dash dash] playMovieInMainWindow:[@"/Users/HAMRR/Documents/HAMRR/instructionMovies/" stringByAppendingString:[self.movieFileLookupDictionary valueForKey:instructionID]]];
+        
+        NSString * filepath = [@"/Users/nlehrer/Documents/HAMRR/instructionMovies/" stringByAppendingString:[self.movieFileLookupDictionary valueForKey:instructionID]];
+        
+        
+        [[Dash dash] performSelectorOnMainThread:@selector(playMovieInMainWindow:) withObject:filepath waitUntilDone:YES];
+        /*
+         
+         playMovieInMainWindow:[@"/Users/HAMRR/Documents/HAMRR/instructionMovies/" stringByAppendingString:[self.movieFileLookupDictionary valueForKey:instructionID]]];
+         */
+        
+        
+        NSLog(@"this is in update media with id in video controller: %@", instructionID);
+    }
+    else{
+        [self playDemoAudio:[self.playerObjectsDictionary objectForKey:instructionID]];
+        self.shouldSkip = NO;
+    }
+    
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)avcontext
+{    
+	if (avcontext == AVSPPlayerRateContext) {
+        
+        self.observerWasAdded = YES;
+        
+		float rate = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
+		
+        if (rate != 1.f) {
+            
+            
+            if (self.videoIsPlaying) {
+                
+                [self performActionOnceVideoStoppedIf:self.shouldSendDoneNotification];
+                self.videoIsPlaying = NO;
+
+                
+            }
+                    
+            
+
+		}
+		else {
+            NSLog(@"Video is playing");
+            self.videoIsPlaying = YES;
+            
+            if (self.shouldSkip) {
+                
+                [[[Dash dash]player] pause];
+                [[[Dash dash]player] seekToTime:[[[[Dash dash]player]currentItem]duration]];
+                self.shouldSkip = NO;
+            }
+
+		}
+	}
+	else {
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:avcontext];
+	}
+}
+
+
+-(void)performActionOnceVideoStoppedIf:(BOOL)shouldNotify
+{
+    if (shouldNotify) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CheckForDemoReplay" object:[NSNumber numberWithBool:YES]];
+        NSLog(@"sent notification CheckForDemoReplay");
+    }
+    //buttons will no longer be seen once you send this - need to put in the video
+}
+
+-(void)removeObserverBeforeNewVideoOrBackToOpenGL
+{
+    if (self.observerWasAdded) {
+        
+//        [[Dash dash] returnToOpenGL];
+        self.observerWasAdded = NO;
+        NSLog(@"removed observer for video rate");
+        
+        [[Dash dash] removeObserver:self forKeyPath:@"player.rate"];
+
+        [[Dash dash] performSelectorOnMainThread:@selector(returnToOpenGL) withObject:nil waitUntilDone:YES];
+
+    }
+    
+
+
+}
+
+-(void)doSomethingWhenStateUpdates:(NSNotification*)notification
+{
+    [self removeObserverBeforeNewVideoOrBackToOpenGL];
+}
+
+
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    if (flag) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CheckForDemoReplay" object:[NSNumber numberWithBool:YES]];        
+        NSLog(@"sent notification CheckForDemoReplay");
+    }
+}
+
+
+-(AVAudioPlayer *)createPlayerObjectFromFileName:(NSString *)filename
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSURL* file = [NSURL URLWithString:[[resourcesPath stringByAppendingPathComponent:@"/sounds/audioTaskID/"] stringByAppendingPathComponent:filename]];
+    
+    AVAudioPlayer * playerObject = [[AVAudioPlayer alloc] initWithContentsOfURL:file error:nil];
+    
+    return playerObject;
+}
+
+- (void) createPlayerObjectsDictionary
+{
+	self.movieFileLookupDictionary = [NSDictionary dictionaryWithContentsOfFile:[[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent: @"/InstructionsMovieFileLookup.plist"]];
+    
+    self.instructionsDictionary = [NSDictionary dictionaryWithContentsOfFile:[[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent: @"/Instructions.plist"]];
+    
+	if (self.movieFileLookupDictionary == nil) {
+		NSLog( @"movieFileLookupDictionary is nil");
+    }
+    else {
+    	NSLog( @"loaded %lu componenets from movieFileLookupDictionary", [self.movieFileLookupDictionary count]);
+        
+        self.playerObjectsDictionary = [NSMutableDictionary dictionaryWithCapacity:[self.movieFileLookupDictionary count]];
+        
+        
+        for(id key in self.movieFileLookupDictionary) {
+        
+            NSString * textValue = [self.instructionsDictionary valueForKey:key];
+            
+            if ([textValue isEqualToString:@"movie"]) {
+                NSLog(@"don't make an audio player object");
+            }
+            else{
+                NSString * stringVal = [self.movieFileLookupDictionary objectForKey:key];
+                
+                [self.playerObjectsDictionary setObject:[self createPlayerObjectFromFileName:stringVal] forKey:key];
+                
+                [[self.playerObjectsDictionary objectForKey:key] prepareToPlay];
+                
+                [[self.playerObjectsDictionary objectForKey:key] setDelegate:self];
+            }
+        }
+    }
+    
+    NSLog( @"loaded %lu componenets from playerObjectsDictionary", [self.playerObjectsDictionary count]);
+
+    
+}
+
+
+@end

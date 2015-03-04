@@ -1,0 +1,106 @@
+//
+//  Level2WaterController.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 6/3/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "Level2WaterController.h"
+
+@implementation Level2WaterController
+
+@synthesize waterSheet = _waterSheet;
+@synthesize timekeeper = _timekeeper;
+@synthesize opacityAdjustForTag = _opacityAdjustForTag;
+
+- (id)init
+{
+	self = [super init];
+    
+    if (self != nil) {
+        
+        [self createWaterSheet];
+        [self setUpWater];
+
+        
+    }
+	return self;
+}
+
+-(void) createWaterSheet
+{
+    self.waterSheet = [WaterSheet createWithName:@"level2Water" parent:[Dash root] withGridDimsX:200 andY:100 withShaderName:@"WavesLevel1"];
+}
+
+
+-(void) setUpWater
+{
+    self.waterSheet.transX = 0;
+	self.waterSheet.transY = -4952;
+	self.waterSheet.transZ = 880;
+	self.waterSheet.rotX = -80;	
+	
+	self.waterSheet.scaledX = 3; 
+	self.waterSheet.scaledY = 3; 
+	self.waterSheet.scaledZ = 1; 
+	
+	self.waterSheet.ampX = 2;
+	self.waterSheet.ampY = 0;
+	
+	self.waterSheet.freqX = -26.69643;
+	self.waterSheet.freqY = -0.07079012;
+	self.waterSheet.timeFactorX = 1.4;
+	self.waterSheet.timeFactorY = 3;
+	
+	self.waterSheet.seg = 2.0;
+	self.waterSheet.useHeightCalc = 0;
+    
+    self.waterSheet.opacity = 0;
+    
+    self.waterSheet.redValue = 1.0;
+    self.waterSheet.greenValue = 1.0;
+    self.waterSheet.blueValue = 1.0;
+ 
+
+}
+
+-(void) drawWaterWithTag:(VisualLevel2Content)tag andLiftTag:(VisualLevel2Content)liftTag //maybe want to play with water when there is fog...
+{    
+    if (tag != vBlank) {
+        
+        if (tag == vGraspIncomplete || 
+            tag == vGraspMild) {
+            
+            self.opacityAdjustForTag = .67;
+        }
+        
+        else if (tag == vGraspComplete) {
+            
+            self.opacityAdjustForTag = .74;
+        }
+        
+        else {
+            self.opacityAdjustForTag = 1.0;
+        }
+        
+        glPushMatrix();
+        [self.waterSheet drawWater];
+        glPopMatrix();
+        
+        glPushMatrix();
+        [self.waterSheet drawDepthOverlay];
+        glPopMatrix();
+    }
+}
+
+
+
+-(void) dealloc
+{
+    [super dealloc];
+    [self.waterSheet release];
+
+}
+
+@end

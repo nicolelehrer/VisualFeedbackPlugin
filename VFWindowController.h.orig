@@ -1,0 +1,66 @@
+//
+//  VFWindowController.h
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/8/11.
+//  Copyright 2011 ASU. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@class VisualFeedback;
+@class VFAdaptationDelegate; 
+@class VFAnalysis;
+@class VFDialogue;
+@class VFPostSetScenario; 
+@class VFPostTrialScenario;
+@class VFPostSequenceScenario;
+@class Path;
+@class TestScenario;
+@class VFAdaptationDebug;
+@class Level3WaterController;
+
+@interface VFWindowController : NSObject {
+	
+	NSWindowController	* windowController;	
+	IBOutlet NSWindow	* gVFHomeSystemWindow;
+	VisualFeedback	* gVisualFeedback;
+	VFAdaptationDelegate	* gVFAdaptationDelegate;
+	VFAnalysis	* gVFAnalysis;
+	VFDialogue * gVFDialogue;
+    TestScenario * gTestScenario;
+	VFAdaptationDebug * gAdaptationDebug;
+    
+	VFPostTrialScenario * gVFPostTrialScenario;
+  	VFPostSetScenario * gVFPostSetScenario;
+	VFPostSequenceScenario * gVFPostSequenceScenario;
+    
+    Level3WaterController * level3WaterController;
+    
+}
+
+- (IBAction) showWindow:(id)sender;
+- (void) setVisualFeedback:(VisualFeedback*)f;
+- (IBAction) mixPostTrialTextures:(id)sender;
+- (IBAction) toggleLevelOne:(BOOL)value;
+- (IBAction) toggleLevelOneFog:(BOOL)value;
+- (IBAction) toggleLevelTwo:(BOOL)value;
+- (IBAction) toggleVerticalError:(BOOL)value;
+- (IBAction)triggerDisplacementAnimation:(id)sender;
+
+
+@property (retain) VisualFeedback * gVisualFeedback;
+@property (retain) VFAdaptationDelegate * gVFAdaptationDelegate;
+@property (retain) VFAnalysis * gVFAnalysis;
+
+@property (retain) VFDialogue * gVFDialogue;
+
+@property (retain) VFPostTrialScenario * gVFPostTrialScenario;
+@property (retain) VFPostSetScenario * gVFPostSetScenario;
+@property (retain) VFPostSequenceScenario * gVFPostSequenceScenario;
+@property (retain) TestScenario * gTestScenario;
+@property (retain) VFAdaptationDebug * gAdaptationDebug;
+
+@property (retain) Level3WaterController * level3WaterController;
+
+@end

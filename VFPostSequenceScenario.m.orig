@@ -1,0 +1,1292 @@
+//
+//  VFPostSequenceScenario.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 12/12/11.
+//  Copyright 2011 ASU. All rights reserved.
+//
+
+#import "VFPostSequenceScenario.h"
+#import "VisualFeedback.h"
+
+@interface VFPostSequenceScenario (private)
+- (void) loadTextures;
+- (float) calcDisplacememt;
+- (void) setUpWaterScape;
+- (void) setUpLights;
+
+@end
+
+
+@implementation VFPostSequenceScenario
+
+@synthesize phaseSwitch;
+
+//@synthesize keyLight;
+//@synthesize fillLight;
+//@synthesize backLight;
+
+@synthesize showBad;
+@synthesize gWaterScape;
+@synthesize gVisualFeedback;
+@synthesize postSequenceScenarioFadeAnimation;
+
+@synthesize sceneOpacity;
+@synthesize normalizedFader;
+@synthesize timekeeper;
+@synthesize travelTime;
+@synthesize timeUnit;
+@synthesize enterTransition;
+
+@synthesize qualityTransportTimeSegment;
+@synthesize transitionTimeSegment;
+@synthesize qualityManipulationTimeSegment;
+
+@synthesize textureOverlapDepth;
+@synthesize textureOverlapHeight;
+@synthesize rotateWater;
+@synthesize translateWaterHeight;
+@synthesize translateWaterDepth;
+@synthesize camTranslateFwd;
+@synthesize camTranslateBack;
+@synthesize camRotateUp;
+@synthesize camRotateDown;
+@synthesize resetAdjustCameras;
+@synthesize translateIncrement;  
+@synthesize rotateIncrement;
+
+@synthesize skyTransX;
+@synthesize skyTransY;
+@synthesize skyTransZ;
+
+@synthesize skyScaleX;
+@synthesize skyScaleY;
+@synthesize skyScaleZ;
+
+@synthesize gateScaleX;
+@synthesize gateScaleY;
+@synthesize gateScaleZ;
+
+@synthesize gateTransX;
+@synthesize gateTransY;
+@synthesize gateTransZ;
+
+@synthesize gateRotX;
+@synthesize gateRotY;
+@synthesize gateRotZ;
+
+@synthesize rockiness;
+
+@synthesize displacementSpeed;
+
+@synthesize blackBlockerTransX;
+@synthesize blackBlockerTransY;
+@synthesize blackBlockerTransZ;
+
+@synthesize blackBlockerScaleX;
+@synthesize blackBlockerScaleY;
+@synthesize blackBlockerScaleZ;
+
+@synthesize sceneTransX;
+@synthesize sceneTransY;
+@synthesize sceneTransZ;
+
+@synthesize sceneRotX;
+@synthesize sceneRotY;
+@synthesize sceneRotZ;
+
+@synthesize boatScaleX;
+@synthesize boatScaleY;
+@synthesize boatScaleZ;
+
+@synthesize boatTransX;
+@synthesize boatTransY;
+@synthesize boatTransZ;
+
+@synthesize boatRotX;
+@synthesize boatRotY;
+@synthesize boatRotZ;
+
+@synthesize triggerLanding;
+@synthesize triggerTakeOff;
+
+@synthesize tempOpacity;
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent
+{
+	ReturnNilIfObjectIsNil( aName );
+	ReturnNilIfObjectIsNil( aParent );
+	
+	logDebug( @"VFPostSequenceScenario.createWithName( %@ ) parent( %@ )", aName, aParent.name );
+	VFPostSequenceScenario * node = [[VFPostSequenceScenario alloc] initWithName:aName parent:aParent];
+	ReturnNilIfObjectIsNil( node );
+	
+    
+	return node;
+}
+
+
+
+#pragma mark ---- initializers  ----
+- (id) initWithName:(NSString *)aName parent:(Node *)aParent
+{
+	self = [super initWithName:aName parent:aParent];
+    if (self) {
+        
+		NSLog(@"init VFPostSequenceScenario");
+		[self loadTextures];
+		
+		timekeeper = [TimeController timekeeper];			//create timer 
+		timekeeper.playbackState = kPlaybackStateStop;
+		
+		self.timeUnit = 1/3; //sec
+		self.travelTime = 0.0;
+        
+        
+        
+		waterDisplacementAnimation = [[DAnimateFloat alloc] initWithObject:self path:@"travelTime" from:0.0 to:10.0 duration:10];
+		waterDisplacementAnimation.mode = DANIMATE_INTERP_EASE_IN_EASE_OUT;
+		waterDisplacementAnimation.frequency = 1;
+		
+        
+        
+        
+        
+		
+//		qualityTransportTimeSegment = 2350;
+		transitionTimeSegment = 1;
+		qualityManipulationTimeSegment = 2;
+		
+		self.sceneOpacity = 0;
+        self.camTranslateFwd = NO;
+//		self.gWaterScape = [WaterScape createWithName:@"WaterScape" parent:[Dash root] withGridDims:100 andShaderID:2];
+        
+        self.resetAdjustCameras = YES;
+        //	[self setUpWaterScape];
+//        [self setUpLights];
+        
+        
+        
+       // float timer = [timekeeper time];
+        
+        self.gWaterScape.scaledX = 2; 
+        self.gWaterScape.scaledY = 2; 
+        self.gWaterScape.scaledZ = 1; 
+        
+        self.gWaterScape.rotX = - 50+7 - 21 -16; // + self.rockiness*sin(timer); //self.gVisualFeedback.dialogue.textTransX*sin(timer);	
+        self.gWaterScape.rotY =   0;
+        
+        
+        self.gWaterScape.ampX = 2.631579;
+        self.gWaterScape.ampY = 2.631579;
+        self.gWaterScape.freqX = 1;
+        self.gWaterScape.freqY = .1855;
+        self.gWaterScape.timeFactorX = 19.65;
+        self.gWaterScape.timeFactorY = 3;
+        
+        
+        
+        
+        
+        self.gWaterScape.seg = 2.0;
+        self.gWaterScape.useHeightCalc = 1;
+        
+        postSequenceScenarioFadeAnimation = [[DAnimateFloat alloc] initWithObject:self path:@"sceneOpacity" from:0.0 to:1.0 duration:.5];
+		postSequenceScenarioFadeAnimation.mode = DANIMATE_INTERP_LINEAR;
+        self.sceneOpacity = 0.0;
+        
+        
+//        self.skyTransX = 0;
+//        self.skyTransY = -51.72414;
+//        self.skyTransZ = 5600;
+//        self.skyScaleX = 1.3;
+//        self.skyScaleY = 1;
+//        self.skyScaleZ = 0;
+        
+        
+        self.blackBlockerScaleX = 7000;
+        self.blackBlockerScaleY = 2559.5;
+	
+//        self.gateTransX = 280;
+        self.gateTransY = 20000;
+        self.gateTransZ = -908.1875;
+        
+        
+    
+    }
+	
+	return self;
+}
+
+
+
+//create new class to set up scene components 
+-(void) setUpLights
+{
+//    self.keyLight = [Node findNodeByName:@"Key" atNode:[Dash root]];
+//    self.keyLight.translateX = 0;
+//    self.keyLight.translateY = 20000.0;
+//    self.keyLight.translateZ = -20000.;
+//    self.keyLight.ambient = [NSColor colorWithCalibratedRed:0.6 green:0.6 blue:0.6 alpha:1.0];
+//    
+//    self.fillLight = [Node findNodeByName:@"Fill" atNode:[Dash root]];
+//    self.fillLight.translateX = -500.0;
+//    self.fillLight.translateY = 500.0;
+//    self.fillLight.translateZ = 3000.0;
+//    
+//    self.backLight = [Node findNodeByName:@"Back" atNode:[Dash root]];
+//    self.backLight.translateX = -500.0;
+//    self.backLight.translateY = 1000.0;
+//    self.backLight.translateZ = -5000.0;
+}
+
+- (void) loadTextures
+{
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    
+    
+	smallBoatDisplay = [[TextureController textureController] createTexture2dWithImage: [resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/boat.png"] target:GL_TEXTURE_2D];
+	backgroundWater = [[TextureController textureController] createTexture2dWithImage: [resourcesPath  stringByAppendingPathComponent:@"/textures/waterWood/travel/test.png"] target:GL_TEXTURE_2D];
+    // water2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/base.png"] target:GL_TEXTURE_2D];
+	water2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/test.png"] target:GL_TEXTURE_2D];
+   
+    
+//    skyTexture1 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/base.png"] target:GL_TEXTURE_2D];
+//    skyTexture1 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/sky.png"] target:GL_TEXTURE_2D];
+    
+    goodSky = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/goodSky.png"] target:GL_TEXTURE_2D];
+
+    badIsle = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/badIsle.png"] target:GL_TEXTURE_2D];
+    
+
+
+    skyTexture2 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/sunrise.png"] target:GL_TEXTURE_2D];
+    skyTexture3 = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/coast.png"] target:GL_TEXTURE_2D];
+    blackCoast = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/blackcoast.png"] target:GL_TEXTURE_2D];
+    ruinsTexture= [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/simpleIsle.png"] target:GL_TEXTURE_2D];
+    friedrichTexture = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/overlay.png"] target:GL_TEXTURE_2D];
+    overlayBright = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/travel/overlayBright.png"] target:GL_TEXTURE_2D];
+    
+    blackFrame = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent:@"/textures/waterWood/blackFrame.png"] target:GL_TEXTURE_2D];
+    
+    dotRight = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/dotRight.png"] target:GL_TEXTURE_2D];
+
+    dotLeft = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/dotLeft.png"] target:GL_TEXTURE_2D];
+    dotBod = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/waterWood/dotBod.png"] target:GL_TEXTURE_2D];
+}
+
+
+-(void) setUpWaterScape
+{
+	//waterTexture = [[TextureController textureController] createTexture2dWithImage:@"homeSystem/waterWood/grid.png" target:GL_TEXTURE_2D];
+    
+}
+
+-(void) glQuadCallWithHeight:(float) imageHeight andWidth:(float)imageWidth
+{
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+	
+	glTexCoord3f(0.0, 0.0, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 0.0, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0, 1.0, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0, 1.0, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);	
+	glEnd();
+}
+
+
+
+-(void) drawBoat
+{
+	float imageWidth = 512*6*self.boatScaleX;
+	float imageHeight = 512*5*self.boatScaleY;
+    
+
+	glRotated(-58+self.boatRotX, 1, 0, 0);
+	glTranslated(self.boatTransX-70, -2000+700+self.boatTransY,+self.boatTransZ -150);
+    
+    glColor4f(1.0, 1.0, 1.0, self.sceneOpacity);
+    
+    [smallBoatDisplay bindTexture];
+	[self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+	
+}
+
+-(void) drawSky
+{
+	float imageWidth;
+	float imageHeight;
+    
+//    float timer = 0; //[timekeeper time];
+    
+    phaseSwitch = 0;
+    
+    if (phaseSwitch == 0)
+    {
+   
+        imageWidth = 512*6;
+        imageHeight = 512*5;
+
+        
+        
+        glPushMatrix();
+        
+        if(showBad)
+        {
+        glScaled(3+skyScaleX-.2, 1.7887931+1+skyScaleY-.5, skyScaleZ);
+        glTranslated(77.6-129.3103+self.skyTransX, 1991.4-1318.966-336.2069-102.6201+113.7527+self.skyTransY, -2844.828+self.skyTransZ+8809.268);		
+        glColor4f(1.0, 1.0, 1.0, self.sceneOpacity/gVisualFeedback.dialogue.textTransY);  
+        }
+        else {
+            glScaled(3+skyScaleX-.2, 1.7887931+1-.8-.5, skyScaleZ);
+            glTranslated(77.6-129.3103+self.skyTransX, 1991.4-1318.966-336.2069-102.6201+113.7527-299, -2844.828+self.skyTransZ+8809.268);		
+            glColor4f(1.0, 1.0, 1.0, self.sceneOpacity/gVisualFeedback.dialogue.textTransY);  
+
+        }
+        
+        if(showBad){
+            [skyTexture1 bindTexture];}
+        
+        else{
+            [goodSky bindTexture];
+        }
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        glPopMatrix();
+    
+    }
+    
+ 
+    if (phaseSwitch == 1)
+    {
+        
+        imageWidth = 512*6;
+        imageHeight = 512*5;
+        
+        glPushMatrix();
+        glScaled(3, 1.7887931+1, 0);
+        glTranslated(77.6-129.3103, 1991.4-1318.966-336.2069-102.6201, -2844.828);		
+        glColor4f(1.0, 1.0, 1.0, 1-self.normalizedFader);  
+        
+        [skyTexture1 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        glPopMatrix();
+
+        
+        glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0, self.normalizedFader/4); 
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [friedrichTexture bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+        glPopMatrix();
+
+
+        imageWidth = 512;
+        imageHeight = 512;
+        
+        glPushMatrix();
+        glScaled(1+self.skyScaleX, 1+self.skyScaleY, 1+self.skyScaleZ);
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);	
+        glColor4f(1.0, 1.0, 1.0, self.normalizedFader); 
+        
+        [skyTexture2 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        
+        glPopMatrix();
+
+        
+    }
+    
+    if(phaseSwitch == 2)
+    {
+        
+        
+        glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0, self.sceneOpacity/4); 
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [friedrichTexture bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+        glPopMatrix();
+
+        
+        imageWidth = 512;
+        imageHeight = 512;
+        
+        glPushMatrix();
+        glScaled(1+self.skyScaleX, 1+self.skyScaleY, 1+self.skyScaleZ);
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);	
+
+        glColor4f(1.0, 1.0, 1.0, self.sceneOpacity);
+        [skyTexture2 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        
+        glPopMatrix();
+    } 
+    
+    
+    if(phaseSwitch == 3)
+    {
+        
+    glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0, 1/5-self.normalizedFader/4); 
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [friedrichTexture bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+    glPopMatrix();
+
+        
+        imageWidth = 512;
+        imageHeight = 512;
+        
+    glPushMatrix();
+        glScaled(1+self.skyScaleX, 1+self.skyScaleY, 1+self.skyScaleZ);
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);	
+        
+        glColor4f(1.0, 1.0, 1.0, 1-self.normalizedFader);
+        [skyTexture2 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        
+    glPopMatrix();
+        
+    glPushMatrix();
+
+        glScaled(1+1.7, 1+1.1, 1+self.skyScaleZ);
+        glTranslated(30, -80, 5500);	
+
+        
+//     glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0, self.normalizedFader/5); 
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [overlayBright bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+     glPopMatrix();
+
+        
+        
+        glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0, self.normalizedFader);
+
+        glScaled(1+1.7+.1, 1+1.1, 1+self.skyScaleZ);
+        glTranslated(30, -80, 5500);	
+        
+
+        
+        [skyTexture3 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        glPopMatrix();
+        
+//    glPopMatrix();
+    }
+    
+    if(phaseSwitch == 4)
+    {
+        imageWidth = 512;
+        imageHeight = 512;
+        
+        
+        glPushMatrix();
+        glColor4f(1.0, 1.0, 1.0,self.sceneOpacity/5); 
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [overlayBright bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+        glPopMatrix();
+        
+        
+        
+        glPushMatrix();
+        
+        glScaled(1+1.7+.1, 1+1.1, 1+self.skyScaleZ);
+        glTranslated(30, -80, 5500);	
+        
+        
+        glColor4f(1.0, 1.0, 1.0, self.sceneOpacity);
+        [skyTexture3 bindTexture];
+        [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+        
+        glPopMatrix();
+        
+    }
+
+    
+    
+    
+    
+    
+    
+}
+
+
+
+-(float) calcDisplacement
+{
+	float travelSpeed = 2.0+7.2;
+	
+	float pureTime = [timekeeper time]*100;
+	//NSLog(@"this is pure time %f", pureTime);
+	
+	float displacement;
+	displacement = (travelSpeed)*pureTime; 
+    
+    qualityTransportTimeSegment = 1500;
+    
+    //segment 1
+    if (pureTime < qualityTransportTimeSegment) {
+        
+        //travel fwd
+        displacement = travelSpeed*pureTime; 
+    }
+    
+
+    if (self.showBad)
+    {
+        
+        self.sceneRotZ = 6*sin(pureTime*.002);
+
+    
+    if (pureTime >= qualityTransportTimeSegment) {
+        
+        
+        
+        //        float easer = [self easeInFrom:0 to:2000 startingAt:2200 until:4300 withSpeedMultiplier:.001];
+        //        NSLog(@"this is displ:%f", displacement);
+        
+        //stop
+//         displacement = travelSpeed*(qualityTransportTimeSegment) +
+//                                     pureTime*[self easeInFrom:0 to:3 startingAt:qualityTransportTimeSegment until:4300 withSpeedMultiplier:.001];
+        
+             
+//        NSLog(@"this is displ:%f", displacement);
+
+        
+//        if(displacement>23900)
+        {
+            
+        }
+        
+        
+//        if (pureTime >= qualityTransportTimeSegment+transitionTimeSegment*2+qualityManipulationTimeSegment) 
+//        {
+//            //travel forward
+//            displacement = travelSpeed*(pureTime-transitionTimeSegment*2-qualityManipulationTimeSegment- pureTime/10);
+//        }
+    }
+    }
+    else{
+    
+        self.sceneRotZ = 0;
+
+    }
+
+    
+    /*
+   	//segment 1
+    if (pureTime < qualityTransportTimeSegment) {
+        
+        //travel fwd
+        displacement = travelSpeed*pureTime; 
+    }
+    
+    
+    
+    if (pureTime >= qualityTransportTimeSegment) {
+        
+       
+        
+        //stop
+        displacement = travelSpeed*qualityTransportTimeSegment;
+        
+        if (pureTime >= qualityTransportTimeSegment+transitionTimeSegment*2+qualityManipulationTimeSegment) 
+        {
+            //travel forward
+            displacement = travelSpeed*(pureTime-transitionTimeSegment*2-qualityManipulationTimeSegment);
+         }
+    }
+    
+    
+    //segment 2	
+    float previousSegment = qualityTransportTimeSegment*2+transitionTimeSegment*2+qualityManipulationTimeSegment;
+    
+    if (pureTime >= previousSegment) 
+    {
+        displacement = travelSpeed*(qualityTransportTimeSegment*2);
+        
+//        if (pureTime >= qualityTransportTimeSegment*2+transitionTimeSegment*4+qualityManipulationTimeSegment*2) 
+//        {
+//             displacement = travelSpeed*(pureTime-transitionTimeSegment*4-qualityManipulationTimeSegment*2);
+//            
+//        }
+    }
+    
+    //segment 3
+//    previousSegment = qualityTransportTimeSegment*3+transitionTimeSegment*4+qualityManipulationTimeSegment*2;
+//    if (pureTime >= previousSegment) {
+//        
+//         displacement = travelSpeed*(qualityTransportTimeSegment*3);
+//    }
+//    
+     */
+	return displacement;
+}
+
+
+
+-(void) drawBirdWithFlapDelay:(float)timeDelay andOpacityChange:(float)opacityChange
+{
+    float widthQuad = 50;
+    float heightQuad = 200;
+    
+    float timer = [timekeeper time]*10+timeDelay;
+
+    glScaled(2, 2, 0);
+    glColor4f(.8-opacityChange, .8-opacityChange, .8-opacityChange, 1-.5*sin(timer)-opacityChange); 
+
+    
+    glPushMatrix();
+    
+    glRotated(boatRotX, 1, 0, 0);
+    glRotated(boatRotY, 0, 1, 0);
+    glRotated(boatRotZ, 0, 0, 1);
+    
+    [dotBod bindTexture];
+   
+    //wingz
+    glPushMatrix();
+//    [dotRight bindTexture];
+
+    glRotated(45*sin(timer), 0, 0, 1);
+    [self glQuadCallWithHeight:widthQuad andWidth:heightQuad];
+    glPopMatrix();
+
+    
+    glPushMatrix();
+    
+    glTranslated(heightQuad, 0, 0);
+    glRotated(-45*sin(timer), 0, 0, 1);
+   
+//    [dotLeft bindTexture];
+
+    [self glQuadCallWithHeight:widthQuad andWidth:heightQuad];
+    glPopMatrix();
+
+    
+    glPopMatrix();
+    
+    
+//    [dotBod bindTexture];
+    
+    //body
+    glPushMatrix();
+    glTranslated(heightQuad/2, 45*sin(timer), 0);
+    [self glQuadCallWithHeight:widthQuad andWidth:widthQuad*2];
+    glPopMatrix();
+    
+    
+
+    
+}
+
+-(void) drawFakeFlockWithOpacityChange:(float)opacityChange
+{
+    float timer = [timekeeper time];
+
+    int i;
+    for (i=0; i<10; i++)
+    {
+        
+        glPushMatrix();
+        glTranslated(200*i*sin(timer-10), 100*i*sin(timer+10), 50*i*sin(timer+20));
+        glTranslated(0, 400*sin(timer), 0);
+        [self drawBirdWithFlapDelay:10*i andOpacityChange:opacityChange];
+        glPopMatrix();
+    
+    }
+
+
+}
+
+
+-(void) drawRuins:(float)depthShift andHeight:(float)heightShift andTexNum:(int)texNum
+
+{
+//    float timer = [timekeeper time];
+    
+    float imageWidth = 512;
+	float imageHeight = 512;
+    
+	//if bool too fast
+	float rot = - 50+7 - 21 -16; //self.gVisualFeedback.dialogue.textTransX*sin(timer);	
+    
+    
+    self.gWaterScape.transY = (self.translateWaterDepth - 3000 -2000 + depthShift);//*cos(self.gWaterScape.rotX);
+    self.gWaterScape.transZ = (self.translateWaterHeight -928 + 1792 + heightShift);//+self.gVisualFeedback.dialogue.textTransX*-sin(timer);   
+
+    glScaled(2+self.gateScaleX, 1.4+self.gateScaleY, 1+self.gateScaleZ);
+  
+//    glScaled(2+self.gateScaleX, 1.4+self.gateScaleY, 1+self.gateScaleZ);
+    glRotated(rot, 1, 0, 0);
+    // glRotated(self.rockiness*sin(timer), 1, 0, 0);
+    
+    //    glRotated(self.gVisualFeedback.dialogue.textTransX*sin(timer), 0, 1, 0);
+    
+    //    glTranslated(0, (self.translateWaterDepth - 3000 -2000 + depthShift)*cos(rot), (self.translateWaterHeight -928 + 1792 + heightShift)*sin(rot));
+    
+    float yPos = (self.translateWaterDepth - 3000 -2000 + depthShift);
+    float zPos = (self.translateWaterHeight -928 + 1792 + heightShift);
+    
+    glTranslated(self.gateTransX, self.gateTransY+yPos, self.gateTransZ+zPos);
+    
+    glRotated(-rot+gateScaleX, 1, 0, 0);
+//    glRotated(gateScaleY, 0, 1, 0);
+//    glRotated(gateScaleZ, 0, 0, 1);
+    
+    glColor4f(1.0, 1.0, 1.0, self.sceneOpacity);
+    if (showBad){[badIsle bindTexture];}
+        else{
+            [ruinsTexture bindTexture];}
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    
+    glColor4f(1.0, 1.0, 1.0, self.sceneOpacity);
+    if (showBad){[badIsle bindTexture];}
+    else{
+        [ruinsTexture bindTexture];}
+    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+
+    
+}
+
+
+-(void)drawOverlay
+{
+    if (phaseSwitch == 1)
+    {
+        glPushMatrix();
+        if(phaseSwitch == 0)
+            glColor4f(1.0, 1.0, 1.0, self.normalizedFader/5); 
+        
+        if(phaseSwitch == 1)
+            glColor4f(1.0, 1.0, 1.0, 1.0/5); 
+        
+        glTranslated(self.skyTransX, self.skyTransY, self.skyTransZ);
+        glScaled(self.skyScaleX, self.skyScaleY, self.skyScaleZ);
+        
+        [friedrichTexture bindTexture];
+        [self glQuadCallWithHeight:2000 andWidth:2000];
+        glPopMatrix();
+    }
+    
+}
+
+
+-(void) drawBackgroundWithDepth:(float)depthShift andHeight:(float)heightShift andTexNum:(int)texNum andHorizShift:(float)horizShift
+{    
+    self.gWaterScape.transX = horizShift;
+    self.gWaterScape.transY = (self.translateWaterDepth - 3000 -2000 + depthShift);
+    self.gWaterScape.transZ = (self.translateWaterHeight -928 + 1792 + heightShift-1000-gVisualFeedback.dialogue.textTransZ);
+    
+    if (self.gWaterScape.transY > -8500 && self.gWaterScape.transZ > -150)    {
+        [self.gWaterScape drawWaterWithTextureType1:water2 andTextureType2:water2 andOpacity:self.sceneOpacity]; 
+    }
+    
+}
+
+
+-(void) translateWaterWithTimer
+{
+	[waterDisplacementAnimation resetFrom:self.travelTime to:10 duration:10];
+	[DAnimation animate:waterDisplacementAnimation];	
+	
+//	NSLog(@"travelTime is %f", self.travelTime);
+}
+
+
+-(void) drawQualityManipualtionTest
+{
+	
+//	float imageWidth = 512*2;
+//	float imageHeight = 512*2;
+	
+	float pureTime = [timekeeper time];
+	float total =  qualityTransportTimeSegment+2*transitionTimeSegment+qualityManipulationTimeSegment;
+    
+    
+	//glRotated(-58, 1, 0, 0);
+    
+	glTranslated(0, -2000+700, -150);
+    
+ 	
+	if (pureTime > qualityTransportTimeSegment && 
+		pureTime <  qualityTransportTimeSegment+transitionTimeSegment)
+	{
+        
+//fade in sunrise view
+self.phaseSwitch = 1;       
+
+		self.normalizedFader = (pureTime-qualityTransportTimeSegment)/transitionTimeSegment;
+  	}
+    
+	
+	else if (pureTime >= qualityTransportTimeSegment+transitionTimeSegment && 
+             pureTime <  qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment)
+	{
+        self.normalizedFader = 1;
+        
+//keep sunrise view        
+self.phaseSwitch = 2;       
+
+  	}
+	
+	else if (pureTime >=  qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment && 
+             pureTime <  qualityTransportTimeSegment+2*transitionTimeSegment+qualityManipulationTimeSegment )
+	{
+        
+
+        
+		self.normalizedFader = 1-(pureTime-(qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment))/transitionTimeSegment;
+        
+	}
+	
+	else if (pureTime > total+qualityTransportTimeSegment && 
+             pureTime <  total+qualityTransportTimeSegment+transitionTimeSegment) 
+    {
+        
+//fade in coast view                
+self.phaseSwitch = 3;        
+        
+       
+		self.normalizedFader = (pureTime-total-qualityTransportTimeSegment)/transitionTimeSegment;
+  	}
+	
+	else if (pureTime >= total+qualityTransportTimeSegment+transitionTimeSegment && 
+             pureTime <  total+qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment) {
+    
+//keep coast view        
+self.phaseSwitch = 4; 
+        
+        self.normalizedFader = 1;
+  	}
+	
+	else if (pureTime >=  total+qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment &&
+             pureTime <  total+qualityTransportTimeSegment+2*transitionTimeSegment+qualityManipulationTimeSegment) {
+        
+		self.normalizedFader = 1-(pureTime-total-(qualityTransportTimeSegment+transitionTimeSegment+qualityManipulationTimeSegment))/transitionTimeSegment;
+	}
+    else {
+        self.normalizedFader = 0;
+    }
+    
+//    glColor4f(0, 1, 0, self.normalizedFader);	
+//    [backgroundWater bindTexture];
+//    [self glQuadCallWithHeight:imageHeight andWidth:imageWidth];
+    
+    //    NSLog(@"fade down: %f", self.normalizedFader);
+	
+}
+
+
+
+
+-(void) drawBlockersWithState:(GraphicsState*) state
+{
+    glPushMatrix();
+    
+    
+    
+    float xPos = [state viewportWidth]/2.0;
+	float yPos = [state viewportHeight]/2.0;
+
+    
+    glColor4f(0, 0, 0, self.sceneOpacity);
+    glTranslated(xPos+ self.blackBlockerTransX, yPos+ self.blackBlockerTransY+self.blackBlockerScaleY, self.blackBlockerTransZ);
+    [self glQuadCallWithHeight:self.blackBlockerScaleY andWidth:self.blackBlockerScaleX];
+
+    glTranslated(0,-2*blackBlockerScaleY,0);
+    [self glQuadCallWithHeight:self.blackBlockerScaleY andWidth:self.blackBlockerScaleX];
+
+    glTranslated(-blackBlockerScaleX,blackBlockerScaleY,0);
+    [self glQuadCallWithHeight:self.blackBlockerScaleY andWidth:self.blackBlockerScaleX];
+
+    glTranslated(2*blackBlockerScaleX,0,0);
+    [self glQuadCallWithHeight:self.blackBlockerScaleY andWidth:self.blackBlockerScaleX];
+    
+    glTranslated(-blackBlockerScaleX,0,0);
+    [blackFrame bindTexture];
+    [self glQuadCallWithHeight:self.blackBlockerScaleY andWidth:self.blackBlockerScaleX];
+    
+    
+        
+    
+    glPopMatrix();
+}
+
+- (void) animateDown
+{
+	[postSequenceScenarioFadeAnimation resetFrom:self.sceneOpacity to:0.0 duration:0.5]; //for a fixed duration
+	[DAnimation animate:postSequenceScenarioFadeAnimation];
+}
+
+
+- (void) animateUp
+{
+	[postSequenceScenarioFadeAnimation resetFrom:self.sceneOpacity to:1.0 duration:0.5]; //for a fixed duration
+	[DAnimation animate:postSequenceScenarioFadeAnimation];
+    
+}
+
+
+
+
+
+
+
+- (void)drawShape:(GraphicsState *)state
+{	   
+       
+//    [self adjustCameras];
+    
+       
+    
+    glTranslated(self.sceneTransX, self.sceneTransY, self.sceneTransZ);
+    glRotated(self.sceneRotX, 1, 0, 0);
+    glRotated(self.sceneRotY, 0, 1, 0);
+    glRotated(self.sceneRotZ, 0, 0, 1);
+    
+    
+    
+	if (self.gVisualFeedback.scenarioDidChange)
+	{
+		if (self.gVisualFeedback.adaptationDelegate.scenario != 3){
+            [self animateDown];
+        }
+		
+		if (self.gVisualFeedback.adaptationDelegate.scenario == 3){
+           
+            
+            self.tempOpacity = 0;
+            self.triggerTakeOff = NO;
+            self.triggerLanding = NO;
+            
+            self.gVisualFeedback.camRotX = -1646.735;
+
+            [self animateUp];
+            
+            self.phaseSwitch = 0;
+            [timekeeper stop];
+            timekeeper.frame = 1800;
+            [timekeeper start:1800];
+            timekeeper.playbackState = kPlaybackStateForward;
+
+            
+		}
+	}
+    
+    
+    
+    if (self.sceneOpacity > 0 ) {
+        
+       
+        
+
+        
+        glDisable( GL_DEPTH_TEST );
+        glEnable( GL_BLEND );
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);        
+        glEnable( GL_TEXTURE_2D ); 
+        
+        
+        
+        float displacement = [self calcDisplacement];
+
+        if(showBad)
+        { self.gWaterScape.ampX = 2.631579+3*fabs(sin([timekeeper time]/10));
+        }
+        
+        else
+        {
+        
+            self.gWaterScape.ampX = 2.631579;
+        }
+
+        
+        
+//        NSLog(@"%f",[self easeInFrom:0 to:500 startingAt:takeoffTime until:0 withSpeedMultiplier:.01]);
+
+//        float easer = [self easeInFrom:0 to:2000 startingAt:2200 until:4300 withSpeedMultiplier:.001];
+//        NSLog(@"this is displ:%f", displacement);
+        
+        int i;
+        for (i=0; i<23; i++) {
+            
+            glPushMatrix();
+            
+            
+//            [self drawBackgroundWithDepth:i*(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed) 
+//                                andHeight:i*(self.textureOverlapHeight) 
+//                                andTexNum:0 andHorizShift:0];
+            
+            
+            
+            
+            [self drawBackgroundWithDepth:i*(self.textureOverlapDepth + 976 + 1500)-displacement 
+                                andHeight:i*(self.textureOverlapHeight) 
+                                andTexNum:0 andHorizShift:0];
+            
+
+            
+            
+            glPopMatrix();
+            
+            
+        }
+        
+        
+               
+        glPushMatrix();
+//        [self drawBoat];
+        glPopMatrix();
+        
+        glPushMatrix();
+        [self drawQualityManipualtionTest];
+        glPopMatrix();
+        
+        
+        
+        
+//        glPushMatrix();
+//        [self drawOverlay];
+//        glPopMatrix();
+       
+     //   if(!showBad)
+        {
+        
+        glPushMatrix();
+        [self drawSky];
+        glPopMatrix();       
+        }
+        
+//       if (showBad) {
+//            
+//            glPushMatrix();
+//            glTranslated(-700.5, 0, 0);
+//            
+//            
+//            [self drawRuins:10*(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+//                  andHeight:10*(self.textureOverlapHeight)  
+//                  andTexNum:0];
+//            
+//            
+//            glPopMatrix();
+//            
+//            
+//            glPushMatrix();
+//            
+//            glTranslated(700.5, 0, 0);
+//            [self drawRuins:(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+//                  andHeight:(self.textureOverlapHeight)  
+//                  andTexNum:0];
+//            
+//            
+//            glPopMatrix();
+//
+//       }
+//        
+        
+        float timer = [timekeeper time]*100;
+        float takeoffTime = 2200;
+        float outOfViewTime = 4300;
+        float doneLandingTime = 4742.00;
+        
+        if(timer > takeoffTime && timer < outOfViewTime)
+        {
+            self.triggerTakeOff = YES;
+            self.triggerLanding = NO;
+        }
+        if (timer > outOfViewTime && timer < doneLandingTime)
+        {
+            self.triggerLanding = YES;
+            self.triggerTakeOff = NO;
+        }
+        
+        if (timer > doneLandingTime)
+        {
+            
+            self.triggerLanding = NO;
+            self.triggerTakeOff = NO;
+        }
+               
+        if(self.triggerTakeOff)
+        {
+            glPushMatrix();
+            glTranslated(2733.25+0*[timekeeper time], -200+2082.625+-24000+1104.25*[timekeeper time], -5500-4000-38*[timekeeper time]);
+            [self drawFakeFlockWithOpacityChange:0];
+            glPopMatrix();
+        }
+        
+        if(self.triggerLanding && !showBad)
+        {
+            
+           
+                glPushMatrix();
+                glTranslated(self.boatScaleX-56.875*[timekeeper time], self.boatScaleY+45200+1650+5000-(957+self.boatScaleZ+112)*[timekeeper time], -7000);
+                [self drawFakeFlockWithOpacityChange:0];
+                glPopMatrix();
+
+            
+            
+        }
+        
+ 
+        
+        if(self.triggerLanding && showBad){
+            
+//                glPushMatrix();
+//                glTranslated(self.boatScaleX-56.875*[timekeeper time], self.boatScaleY+45200+1650+5000-(957+self.boatScaleZ+112)*[timekeeper time], -7000);
+//                [self drawFakeFlockWithOpacityChange:[timekeeper time]/100];
+//                glPopMatrix();
+            
+            
+            
+                tempOpacity = tempOpacity - .05;
+            
+            
+            
+            glPushMatrix();
+            glTranslated(self.boatScaleX-56.875*[timekeeper time], self.boatScaleY+45200+1650+5000-(957+self.boatScaleZ+112)*[timekeeper time], -7000);
+            [self drawFakeFlockWithOpacityChange:-tempOpacity];
+            glPopMatrix();
+
+            
+        }
+        
+        
+        
+        
+        if (showBad) {
+            
+            glPushMatrix();
+            glTranslated(-700.5, 0, 0);
+            
+            
+            [self drawRuins:10*(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+                  andHeight:10*(self.textureOverlapHeight)  
+                  andTexNum:0];
+            
+            
+            glPopMatrix();
+            
+            
+            glPushMatrix();
+            
+            glTranslated(700.5, 0, 0);
+            [self drawRuins:(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+                  andHeight:(self.textureOverlapHeight)  
+                  andTexNum:0];
+            
+            
+            glPopMatrix();
+            
+        }
+        
+
+              
+        
+        
+//        NSLog(@"%f",[self easeInFrom:0 to:500 startingAt:takeoffTime until:0 withSpeedMultiplier:.01]);
+
+        
+ 
+        
+        
+        if(!showBad){
+        //drawIslands
+            
+            glPushMatrix();
+            glTranslated(-830.5, 0, 0);
+
+            
+            [self drawRuins:10*(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+                  andHeight:10*(self.textureOverlapHeight)  
+                  andTexNum:0];
+            
+            
+            glPopMatrix();
+          
+            
+            glPushMatrix();
+            
+            glTranslated(830.5, 0, 0);
+            [self drawRuins:(self.textureOverlapDepth + 976 + 1500)-displacement/(1+self.displacementSpeed)  
+                  andHeight:(self.textureOverlapHeight)  
+                  andTexNum:0];
+            
+            
+            glPopMatrix();
+
+            
+        }
+//        
+//        if(showBad)
+//        {
+//            
+//            glPushMatrix();
+//            [self drawSky];
+//            glPopMatrix();       
+//        }
+
+
+        
+        
+        glDisable( GL_TEXTURE_2D ); 
+        
+        
+        
+        
+    }
+    
+    
+    
+    
+    [state pushMatrixReset2d];
+//	[self drawBlockersWithState:state];
+    [state popMatrix];
+
+
+    
+
+}
+
+
+
+
+- (void) setVisualFeedback:(VisualFeedback *)f
+{
+	self.gVisualFeedback = f;
+    //	[self setUpWaterScape];
+}
+
+
+-(void) dealloc
+{
+ 
+    [super dealloc];
+}
+
+@end

@@ -1,0 +1,464 @@
+//
+//  Level1SceneDrawer.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 8/22/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "Level1SceneDrawer.h"
+
+@interface Level1SceneDrawer()
+@property(retain) Texture2d * boatTextureCenter;
+@property(retain) Texture2d * fogTexture;
+@property(assign) float boatTransX;
+@property(assign) float boatTransY;
+@property(assign) float boatTransZ;
+@property(assign) float boatRotX;
+@property(assign) float boatRotY;
+@property(assign) float boatRotZ;
+@property(assign) float boatOpacity;
+@property(assign) float errorMagnitude;
+@property(assign) float fogDisplacement;
+@property(retain) Texture2d * blackOverlay;
+@property(assign) float overlayScaleX;
+@property(assign) float overlayScaleY;
+@property(assign) float overlayTranslateX;
+@property(assign) float overlayTranslateY;
+@property(assign)  float camTransY;
+@property(assign) float camTransZ;
+
+@end
+
+
+@implementation Level1SceneDrawer
+
+@synthesize level1WaterController = _level1WaterController;
+@synthesize gVisualFeedback = _gVisualFeedback;
+@synthesize analysisFeatures = _analysisFeatures;
+@synthesize currentFrame = _currentFrame;
+@synthesize sceneTransitionController = _sceneTransitionController;
+@synthesize sceneTransitionDictionary = _sceneTransitionDictionary;
+@synthesize boatRotX = _boatRotX;
+@synthesize boatRotY = _boatRotY;
+@synthesize boatRotZ = _boatRotZ;
+@synthesize boatTransX = _boatTransX;
+@synthesize boatTransY = _boatTransY;
+@synthesize boatTransZ = _boatTransZ;
+@synthesize boatTextureCenter = _boatTextureCenter;
+@synthesize fogTexture = _fogTexture;
+@synthesize timekeeper = _timekeeper;
+@synthesize boatOpacity = _boatOpacity;
+@synthesize fogOpacity = _fogOpacity;
+@synthesize testErrorValue = _testErrorValue;
+@synthesize drawPlotOnly = _drawPlotOnly;
+@synthesize readyToUpdate = _readyToUpdate;
+@synthesize pathObject = _pathObject;
+@synthesize pathObject2 = _pathObject2;
+@synthesize errorMagnitude = _errorMagnitude;
+@synthesize pathFeaturesFromAnalysis = _pathFeaturesFromAnalysis;
+//for testing thru interface
+@synthesize positiveHorizontalMagnitude = _positiveHorizontalMagnitude;
+@synthesize negativeHorizontalMagnitude = _negativeHorizontalMagnitude;
+@synthesize positiveVerticalMagnitude = _positiveVerticalMagnitude;
+@synthesize negativeVerticalMagnitude = _negativeVerticalMagnitude;
+@synthesize positiveHorizontalCategory = _positiveHorizontalCategory;
+@synthesize negativeHorizontalCategory = _negativeHorizontalCategory;
+@synthesize positiveVerticalCategory = _positiveVerticalCategory;
+@synthesize negativeVerticalCategory = _negativeVerticalCategory;
+@synthesize horizontalComponentForPositiveVertical = _horizontalComponentForPositiveVertical;
+@synthesize horizontalComponentForNegativeVertical = _horizontalComponentForNegativeVertical;
+@synthesize fogDisplacement = _fogDisplacement;
+@synthesize showFogClear = _showFogClear;
+@synthesize blackOverlay = _blackOverlay;
+@synthesize overlayScaleX = _overlayScaleX;
+@synthesize overlayScaleY = _overlayScaleY;
+@synthesize overlayTranslateX = _overlayTranslateX;
+@synthesize overlayTranslateY = _overlayTranslateY;
+@synthesize showWithAudioPlayback = _showWithAudioPlayback;
+@synthesize camTransY = _camTransY;
+@synthesize camTransZ = _camTransZ;
+
++ (id) createWithName:(NSString *)aName parent:(Node *)aParent
+{
+    ReturnNilIfObjectIsNil( aName );
+    ReturnNilIfObjectIsNil( aParent );
+    
+    logDebug( @"Level1SceneDrawer.createWithName( %@ ) parent( %@ )", aName, aParent.name );
+    Level1SceneDrawer * node = [[Level1SceneDrawer alloc] initWithName:aName parent:aParent];
+    ReturnNilIfObjectIsNil( node );
+    
+    return node;
+}
+
+
+
+#pragma mark ---- initializers  ----
+- (id) initWithName:(NSString *)aName parent:(Node *)aParent
+{
+    self = [super initWithName:aName parent:aParent];
+    if (self) {
+        
+        [self createSceneObjects];
+        [self createDictionary];
+        
+        self.sceneTransitionController.useTimeOut = YES;
+        self.sceneTransitionController.timedOutInSeconds = 6.5;
+        self.sceneTransitionController.delayDurationInSeconds = 1.0;
+        self.readyToUpdate = NO;
+        
+        
+        
+        
+        
+    }
+    
+    return self;
+}
+
+
+-(void) createDictionary
+{    
+    self.sceneTransitionDictionary = [[NSMutableDictionary alloc] init];
+}
+
+
+-(void) createSceneObjects
+{
+    self.sceneTransitionController = [[SceneTransitionController alloc] initWithStartValue:0 andEndValue:1 andDurationInSec:1];        
+    self.level1WaterController = [[Level1WaterController alloc] init];  
+
+    NSString * resourcesPath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    self.boatTextureCenter = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/level1/boatLevel1.png"] target:GL_TEXTURE_2D];
+    self.fogTexture = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/level1/fogLevel1.png"] target:GL_TEXTURE_2D];
+    
+    self.blackOverlay = [[TextureController textureController] createTexture2dWithImage:[resourcesPath stringByAppendingPathComponent: @"/textures/level1/blackOverlayLevel1.png"] target:GL_TEXTURE_2D];
+    
+    self.timekeeper = [TimeController timekeeper];			
+
+    [self setUpPath];
+    
+    self.boatTransX = 0; 
+    self.boatTransY = 1900;//3000;
+    self.boatTransZ = -3000;//-5500;
+    self.boatRotX = 4;
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveAudioNotification:)
+                                                 name:@"AudioPlaybackDidStop"
+                                               object:nil];
+    
+
+    
+}
+
+-(void) setUpPath
+{
+    self.pathObject = [[Path alloc] init];
+    
+    self.pathObject.transX = 0;
+    self.pathObject.transY = -1186.511;//-1589.929;
+	self.pathObject.transZ = -1720.524;
+	self.pathObject.rotX = -56.09648;//-48;
+    self.pathObject.pathZprimeSpread = 285.237; //210;
+    self.pathObject.pathSlope = 0;
+    self.pathObject.scatterMagnitude = .8;
+    
+//    self.pathObject2 = [[Path alloc] init];
+//
+//    self.pathObject2.binNumber = 16;
+//    self.pathObject2.transX = 0;//-300;
+//    self.pathObject2.transY = -1300;//-1186.511;//-1589.929;
+//	self.pathObject2.transZ = 100;//-1720.524;
+//	self.pathObject2.rotX = -56.09648;//-48;
+//    self.pathObject2.pathZprimeSpread = 285.237; //210;
+//    self.pathObject2.pathSlope = 0;//-.05;
+//    self.pathObject2.scatterMagnitude = .8;
+
+
+    
+//    self.pathObject.amplitude = 1100 + 434.4978;
+//    self.pathObject.errorAmp2 = 1600 + 102.6201; //self.gVisualFeedback.dialogue.textTransY;
+//    self.pathObject.errorAmp3 = 2000 -1000; //self.gVisualFeedback.dialogue.textTransZ;
+//    self.pathObject.errorAmp4 = 2200 + 124.1921; //self.pathReflectionRight.rotX;
+//    
+//    self.pathObject.ampHeightFactor = 3.5;
+//    self.pathObject.heightToWidthRatio = 2;
+}
+
+
+- (void) drawFogWithClear:(BOOL)doShowClear
+{
+   	float timer = [self.timekeeper time]/50;
+    float modOpacity;
+    
+    if (doShowClear) {
+    
+        if (self.fogOpacity < 1.0 && self.sceneTransitionController.fadeUpDidStart) {
+            self.fogDisplacement = 0;
+            modOpacity= self.fogOpacity;
+        }
+        if (self.fogOpacity == 1.0) {
+            self.fogDisplacement = self.fogDisplacement+20;
+            modOpacity= self.fogOpacity-self.fogDisplacement/1000;
+        }
+    }
+    else{
+            self.fogDisplacement = 0;
+            modOpacity= self.fogOpacity;
+        }
+    
+//    NSLog(@"fogOpacity = %f", self.fogOpacity);
+    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    
+    glEnable( GL_TEXTURE_2D);
+
+        glPushMatrix();
+            glRotated(20, 1, 0, 0);
+            glTranslated(-self.fogDisplacement, 350, 5300);
+            glScaled(3, 2, 2);
+            
+            [self glQuadWithTexture:self.fogTexture withHeight:1500 withWidth:1500 andOpacity:modOpacity withColorShift:0 andDisplacement:timer WithInitialDisplacement:0];
+        glPopMatrix();
+        
+        glPushMatrix();
+
+            glRotated(20, 1, 0, 0);
+            glTranslated(0+self.fogDisplacement, 350, 5300);
+            glScaled(3, 2, 2);
+
+            [self glQuadWithTexture:self.fogTexture withHeight:1500 withWidth:1500 andOpacity:modOpacity*.75 withColorShift:0 andDisplacement:-timer WithInitialDisplacement:1];
+        glPopMatrix();
+
+    glDisable( GL_TEXTURE_2D );
+    
+    
+    
+    
+    
+}
+
+- (void) drawBoat
+{
+	float timer = [self.timekeeper time];
+	
+    glPushMatrix();
+    
+	glTranslated(self.boatTransX, self.boatTransY, self.boatTransZ);
+	glRotated(65 + self.boatRotX*sin(timer), 1, 0, 0);
+
+	glRotated(0*sin(timer), 0, 1, 0);
+	glRotated(3*sin(timer), 0, 0, 1);
+    
+    [self glQuadWithTexture:self.boatTextureCenter withHeight:1500 withWidth:1500 andOpacity:self.boatOpacity withColorShift:timer andDisplacement:0 WithInitialDisplacement:0];
+    
+	glPopMatrix();
+}
+
+
+-(void) glQuadWithTexture:(Texture2d *)texture withHeight:(float) imageHeight withWidth:(float)imageWidth andOpacity:(float)opacity withColorShift:(float)colorShift andDisplacement:(float)displacement WithInitialDisplacement:(float)initialDisplacement
+{
+	glDisable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	
+ 	glEnable( GL_TEXTURE_2D );
+	    
+	glColor4f(1+sin(colorShift)/2.5, 1+sin(colorShift)/2.5, 1+sin(colorShift)/2.5, opacity);
+	
+	[texture bindTexture];
+	
+	glBegin(GL_QUADS);
+	
+	float z=0.0;
+	
+	glTexCoord3f(0.0+displacement+initialDisplacement, 0.0, z);
+	glVertex3f(-imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0+displacement+initialDisplacement, 0.0, z);
+	glVertex3f( imageWidth/2, -imageHeight/2, 0.0);
+	
+	glTexCoord3f(1.0+displacement+initialDisplacement, 1.0, z);
+	glVertex3f( imageWidth/2, imageHeight/2, 0.0);
+	
+	glTexCoord3f(0.0+displacement+initialDisplacement, 1.0, z);
+	glVertex3f(-imageWidth/2, imageHeight/2, 0.0);
+	glEnd();
+	
+	glDisable( GL_TEXTURE_2D ); 
+}
+
+
+-(void) manageSceneTransition
+{
+    //update stop from adaptation, convert from 100 fps to sec, then stubtract the delay time, then substract fadeDownTime
+    self.sceneTransitionController.timedOutInSeconds = .01*self.gVisualFeedback.adaptationDelegate.frameCountForLevel1Display 
+                                                        - self.sceneTransitionController.delayDurationInSeconds
+                                                        - self.sceneTransitionController.durationInSeconds;
+    
+    float sceneOpacity = [self.sceneTransitionController boolAnimateOpacityForScene];
+        
+    self.level1WaterController.waterSheet.opacity = sceneOpacity;
+    self.pathObject.opacity = sceneOpacity;
+
+    self.boatOpacity = sceneOpacity;
+    self.fogOpacity = sceneOpacity;
+    self.pathObject.underWaterRock.opacity = sceneOpacity;
+    
+    if (!self.sceneTransitionController.shouldDrawScene) {
+        self.fogDisplacement = 0;
+        self.fogOpacity = 0;
+    }
+   
+}
+
+
+-(void) sendNotificationOfSceneTransitions
+{
+    [self.sceneTransitionDictionary setObject:[NSNumber numberWithBool:self.sceneTransitionController.shouldDrawScene] forKey:@"shouldDrawScene"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Level1SceneTransition" object:self.sceneTransitionDictionary];
+}
+
+-(void) updateCameraLocation
+{
+    [[[Dash dashView] cam] setTranslateY:-2062.238 + 137+self.camTransY];
+    [[[Dash dashView] cam] setTranslateZ:6592.179 + self.camTransZ];
+}
+
+-(void) updateAnalysisValues
+{
+    if (self.readyToUpdate) {
+            
+        int i;
+        for( i = 0; i < 20; i++ ) {
+            PathFeatures * tempPathFeatures = [self.currentFrame.pathBins objectAtIndex:i];
+            
+            [[self.pathObject.pathBins objectAtIndex:i] setPositiveHorizontalCategory:tempPathFeatures.positiveHorizontalCategory];
+            [[self.pathObject.pathBins objectAtIndex:i] setPositiveHorizontalMagnitude:tempPathFeatures.positiveHorizontalMagnitude];
+            
+            [[self.pathObject.pathBins objectAtIndex:i] setNegativeHorizontalCategory:tempPathFeatures.negativeHorizontalCategory];
+            [[self.pathObject.pathBins objectAtIndex:i] setNegativeHorizontalMagnitude:tempPathFeatures.negativeHorizontalMagnitude];
+            
+            [[self.pathObject.pathBins objectAtIndex:i] setPositiveVerticalCategory:tempPathFeatures.positiveVerticalCategory];
+            [[self.pathObject.pathBins objectAtIndex:i] setPositiveVerticalMagnitude:tempPathFeatures.positiveVerticalMagnitude];
+            
+            [[self.pathObject.pathBins objectAtIndex:i] setNegativeVerticalCategory:tempPathFeatures.negativeVerticalCategory];
+            [[self.pathObject.pathBins objectAtIndex:i] setNegativeVerticalMagnitude:tempPathFeatures.negativeVerticalMagnitude];
+            
+            [[self.pathObject.pathBins objectAtIndex:i] setHorizontalComponentForNegativeVertical:tempPathFeatures.horizontalComponentForNegativeVertical];
+            [[self.pathObject.pathBins objectAtIndex:i] setHorizontalComponentForPositiveVertical:tempPathFeatures.horizontalComponentForPositiveVertical];
+        }
+        self.readyToUpdate = NO;
+    }
+}
+
+
+-(void) simulateAnalysisValues
+{
+    int i;
+    for( i = 0; i < 20; i++ ) {
+        
+        [[self.pathObject.pathBins objectAtIndex:i] setPositiveHorizontalCategory:self.positiveHorizontalCategory];
+        [[self.pathObject.pathBins objectAtIndex:i] setPositiveHorizontalMagnitude:self.positiveHorizontalMagnitude];
+        
+        [[self.pathObject.pathBins objectAtIndex:i] setNegativeHorizontalCategory:self.negativeHorizontalCategory];
+        [[self.pathObject.pathBins objectAtIndex:i] setNegativeHorizontalMagnitude:self.negativeHorizontalMagnitude];
+        
+        [[self.pathObject.pathBins objectAtIndex:i] setPositiveVerticalCategory:self.positiveVerticalCategory];
+        [[self.pathObject.pathBins objectAtIndex:i] setPositiveVerticalMagnitude:self.positiveVerticalMagnitude];
+        
+        [[self.pathObject.pathBins objectAtIndex:i] setNegativeVerticalCategory:self.negativeVerticalCategory];
+        [[self.pathObject.pathBins objectAtIndex:i] setNegativeVerticalMagnitude:self.negativeVerticalMagnitude];
+        
+        [[self.pathObject.pathBins objectAtIndex:i] setHorizontalComponentForNegativeVertical:self.horizontalComponentForNegativeVertical];
+        [[self.pathObject.pathBins objectAtIndex:i] setHorizontalComponentForPositiveVertical:self.horizontalComponentForPositiveVertical];
+    }
+}
+
+
+//AudioPlaybackDidStop
+-(void) receiveAudioNotification:(NSNotification *) notification
+{
+    self.showFogClear = YES;    
+//    NSLog(@"received notification of lift from audio playback");
+}
+
+
+
+
+-(void) drawShape:(GraphicsState *)state
+{
+    if (self.gVisualFeedback.currEnabledLevel == kLevel1 || self.gVisualFeedback.currEnabledLevel == kLevel1Lift ||
+        self.gVisualFeedback.currEnabledLevel == kLevelDemoLevel1 || self.gVisualFeedback.currEnabledLevel == kLevelDemoLevel1Lift) {
+        
+//        [self updateAnalysisValues];
+        
+        
+        //----------FOR DEBUG - REMOVE-------------//
+
+        [self simulateAnalysisValues];
+        
+        //----------------------------------------//
+
+        
+        [self manageSceneTransition];
+
+        [self updateCameraLocation];
+        
+        [self sendNotificationOfSceneTransitions];
+        
+        if (self.sceneTransitionController.shouldDrawScene) {
+            
+                [self.level1WaterController drawWater];
+
+            
+
+                [self drawBoat]; 
+
+
+                [self.pathObject drawErrorPathComponents];
+                [self.pathObject drawTexturesInPath];
+            
+                [self.pathObject drawVerticalErrorPathComponents];
+            
+                [self.pathObject drawFirstRocks];
+            
+                if (self.gVisualFeedback.currEnabledLevel == kLevel1Lift || self.gVisualFeedback.currEnabledLevel == kLevelDemoLevel1Lift) {
+                   
+                    if (self.gVisualFeedback.analysis.currentFrame.liftSuccess && self.showWithAudioPlayback) {
+                    
+                        //wait for cue from audio notification to show clear
+                        [self drawFogWithClear:self.showFogClear];
+                    }
+                    else if (self.gVisualFeedback.analysis.currentFrame.liftSuccess && !self.showWithAudioPlayback) {
+                        
+                        [self drawFogWithClear:YES];
+                    }
+                    else{
+                    
+                        [self drawFogWithClear:NO];
+                    }
+                }
+        }
+    }
+}
+
+
+-(void) setVisualFeedback:(VisualFeedback *) f
+{        
+    self.gVisualFeedback = f;
+}
+
+-(void) dealloc
+{
+    [super dealloc];
+    [self.level1WaterController release];
+
+}
+
+
+@end
+

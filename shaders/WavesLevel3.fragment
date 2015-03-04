@@ -1,0 +1,83 @@
+// default.framgment
+// Dash
+//
+// Default fragment shader
+// Revised to work properly with blend/alpha, use Opacity uniform.
+
+uniform int UseLight0;
+uniform int UseLight1;
+uniform int UseLight2;
+uniform sampler2D BackgroundTexture0;
+//uniform sampler2D BackgroundTexture1;
+
+uniform int UseDiffuseTexture;
+uniform float Opacity;
+uniform float Slope;
+uniform float ColorFactor;
+
+uniform float Segment;
+uniform int TurnHeightCalcOn;
+varying vec4 v_shadowmap_coord; /* the vertex position in shadowmap coords */
+varying vec3 v_position_eye;
+varying vec3 v_normal_eye;
+varying float waveHeight;
+varying float wavePositionX;
+varying float wavePositionY;
+varying float tempNoise;
+
+ varying float ampCheckHack;
+varying float TextureShiftTimer;
+
+void main()
+{
+	vec2 shift = vec2(TextureShiftTimer);
+
+//vec4 diffuseTexColor = texture2DRect( BackgroundTexture0, gl_TexCoord[0].st  );
+    vec4 diffuseTexColor = texture2D( BackgroundTexture0, gl_TexCoord[0].st+ shift );
+
+//vec4 tColor = texture2DRect( DiffuseTexture, gl_TexCoord[0].st );
+	
+
+ 
+	float opacityBasedOnHeight;	
+
+ 
+    
+    
+    if( TurnHeightCalcOn == 1)
+    {
+        if (waveHeight < Segment)
+        {	//float diff = Segment - waveHeight;
+            float diff =  waveHeight - Segment;	
+            opacityBasedOnHeight = waveHeight/diff;
+            
+            
+            if(ampCheckHack ==1.0)
+            {
+                gl_FragColor = diffuseTexColor*vec4(opacityBasedOnHeight)*Opacity;
+            }
+            else{
+                
+                gl_FragColor = vec4(.9)*vec4(opacityBasedOnHeight)*Opacity;
+            }
+        }
+        
+        else if (waveHeight < Segment) {
+            gl_FragColor = vec4(1,0,0,1);
+        }
+        else
+        {
+            gl_FragColor = diffuseTexColor*vec4(5./256.,50./256.,112./256.,.25);
+            
+        }
+    } 
+    
+    else{
+		gl_FragColor = Opacity*vec4(diffuseTexColor)*(1.0+ColorFactor);
+	} 
+    
+   
+    
+    
+}
+

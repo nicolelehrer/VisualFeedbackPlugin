@@ -1,0 +1,289 @@
+//
+//  Level3WaterController.m
+//  VisualFeedback
+//
+//  Created by Nicole Lehrer on 6/7/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import "Level3WaterController.h"
+
+@implementation Level3WaterController
+
+@synthesize displacementDepth = _displacementDepth;
+@synthesize numSheets = _numSheets;
+@synthesize numTopSheets = _numTopSheets;
+@synthesize dTimer = _dTimer;
+@synthesize waterTexture = _waterTexture;
+@synthesize waterSheet = _waterSheet;
+
+@synthesize waterSheetDepthOverlap = _waterSheetDepthOverlap;
+@synthesize waterSheetHeightOverlap = _waterSheetHeightOverlap;
+@synthesize waterOpacity = _waterOpacity;
+@synthesize initialWaterDepth = _initialWaterDepth;
+
+@synthesize level3SceneController = _level3SceneController;
+
+@synthesize cropMaxY = _cropMaxY;
+@synthesize cropMinY = _cropMinY;
+@synthesize cropMaxTopY = _cropMaxTopY;
+@synthesize cropMinTopY = _cropMinTopY;
+- (id)init
+{
+    self = [super init];
+    
+    if (self != nil) {
+        
+        self.waterSheetDepthOverlap = 1837.924; //661.6042;//976 + 1500;
+        self.initialWaterDepth = -5500;
+        
+        [self createWaterSheet];
+        [self setUpWaterControls];
+        [self createTimeController];
+        
+        self.cropMinY = -8000;
+        self.cropMaxY = 3000;
+        self.cropMinTopY = -8000;
+        self.cropMaxTopY = 3000;
+
+        self.numSheets = 10;
+        self.numTopSheets = 4;
+    }
+    return self;
+}
+
+
+-(void) createWaterSheet
+{
+    self.waterSheet = [WaterSheet createWithName:@"level3Water" parent:[Dash root] withGridDimsX:100 andY:100 withShaderName:@"WavesLevel3"];
+    
+   // self.level3SceneController = [[Level3SceneController alloc] init];
+
+}
+
+-(void) createTimeController
+{
+    self.dTimer = [TimeController timekeeper];
+}
+
+-(void) setUpWaterControls
+{
+    self.waterSheet.transY = 0;
+    self.waterSheet.transX = 0;
+	self.waterSheet.transZ =-167.3963;//230.031;//5600;
+	self.waterSheet.rotX = -91.06681;//-85;//-59.73799;	
+	
+	self.waterSheet.scaledX = 2; 
+	self.waterSheet.scaledY = 2; 
+	self.waterSheet.scaledZ = 1; 
+	
+	self.waterSheet.ampX = 2.631579;
+	self.waterSheet.ampY = 2.631579;
+	
+	self.waterSheet.freqX = 1;
+	self.waterSheet.freqY = 0.05303745;//.1855;
+    
+    //bad 0.05303745
+    //making y dimension greater makes waves look rougher
+    
+	self.waterSheet.timeFactorX = 2;
+	self.waterSheet.timeFactorY = 3;
+	
+	self.waterSheet.useHeightCalc = 1;
+}
+
+-(void) drawDayWater
+{
+    self.waterSheet.vecCalcType = 3.0;
+
+    self.waterSheet.seg = 2.0;
+    self.waterSheet.ampX = 4.0;
+    self.waterSheet.ampY = 2.631579;
+    self.waterSheet.freqX = 0.077;
+    self.waterSheet.freqY = .1855;
+    
+    self.waterSheet.useColor = YES;
+
+    self.waterSheet.timeFactorX = 1.5;
+    
+    
+    self.displacementDepth = -[self.level3SceneController.singleTravelSegment calcDisplacement];
+        
+// for transition from night to day
+//        self.waterSheet.opacity = -self.displacementDepth/self.level3SceneController.singleTravelSegment.endValue;        
+
+    self.waterSheet.useHeightCalc = 0;    
+    
+    int i; 
+    for (i=0; i<self.numSheets; i++)
+    {     
+        glPushMatrix();
+        
+        self.waterSheet.transX = 0; 
+        self.waterSheet.transY = self.initialWaterDepth + self.waterSheetDepthOverlap*i + self.displacementDepth;
+        
+        if (self.waterSheet.transY < self.cropMaxY && self.waterSheet.transY > self.cropMinY) 
+        {
+            
+            [self.waterSheet drawWater];
+        }
+            
+        glPopMatrix();
+    }
+}
+
+
+-(void) drawGreyWater
+{
+    self.waterSheet.vecCalcType = 0.0;
+
+    self.displacementDepth = -[self.level3SceneController.singleTravelSegment calcDisplacement];
+    
+    self.waterSheet.seg = 2.0;
+    self.waterSheet.ampX = 2.0;
+    self.waterSheet.ampY = 2.631579;
+    self.waterSheet.freqX = 0.077;
+    self.waterSheet.freqY = .1855;
+    self.waterSheet.timeFactorX = 1.5;
+
+    self.waterSheet.useColor = NO;
+
+    self.waterSheet.useHeightCalc = 0;    
+    
+    int i; 
+    for (i=0; i<self.numSheets; i++)
+    {     
+        glPushMatrix();
+        
+        self.waterSheet.transX = 0; 
+        self.waterSheet.transY = self.initialWaterDepth + self.waterSheetDepthOverlap*i + self.displacementDepth;
+        
+        if (self.waterSheet.transY < self.cropMaxY && self.waterSheet.transY > self.cropMinY) 
+        {
+            
+            [self.waterSheet drawWater];
+        }
+        
+        glPopMatrix();
+    }
+    
+
+    // top reflection layer     
+    //    (roughnessLevel == 1)
+    
+    /*
+    self.waterSheet.seg = 4;
+    self.waterSheet.freqX = 1;
+    self.waterSheet.freqY = .053;
+    self.waterSheet.ampX = 1.11;
+    self.waterSheet.ampY =  2.63;
+    
+    self.waterSheet.useHeightCalc = 1;    
+    
+    for (i=0; i<self.numTopSheets; i++)
+    {     
+        glPushMatrix();
+        
+        self.waterSheet.transX = 0;
+        self.waterSheet.transY = self.initialWaterDepth +self.waterSheetDepthOverlap*i + self.displacementDepth;
+        
+        if (self.waterSheet.transY < self.cropMaxY && self.waterSheet.transY > self.cropMinY) 
+        {
+            [self.waterSheet drawWater];
+        }        
+        glPopMatrix();
+    }
+     */
+    
+}
+
+
+
+-(void) drawStormyWater
+{
+    
+    self.displacementDepth = -[self.level3SceneController.singleTravelSegment calcDisplacement];
+    
+    /*
+    self.waterSheet.seg = 2.0;
+    self.waterSheet.ampX = 2.631579;
+    self.waterSheet.ampY = 2.631579;
+    self.waterSheet.freqX = 1;
+    self.waterSheet.freqY = .1855;
+    self.waterSheet.useColor = NO;
+    self.waterSheet.useHeightCalc = 1;    
+    
+   int i; 
+    for (i=0; i<self.numSheets; i++)
+    {     
+        glPushMatrix();
+        
+        self.waterSheet.transX = 0; 
+        self.waterSheet.transY = self.initialWaterDepth + self.waterSheetDepthOverlap*i + self.displacementDepth;
+        
+        if (self.waterSheet.transY < self.cropMaxY && self.waterSheet.transY > self.cropMinY) 
+        {
+            
+            [self.waterSheet drawWater];
+        }
+        
+        glPopMatrix();
+    }
+    */
+
+  
+    // top reflection layer     
+    //    (roughnessLevel == 2)
+    
+    self.waterSheet.useColor = NO;
+
+    self.waterSheet.vecCalcType = 0.0;
+
+    self.waterSheet.timeFactorX = 2.0;
+    self.waterSheet.seg = 28;
+    self.waterSheet.freqX = 0.077;
+    self.waterSheet.freqY = 0.0376;
+    self.waterSheet.ampX = 4;
+    self.waterSheet.ampY =  18.28;
+    
+//    self.waterSheet.useHeightCalc = 1;    
+    self.waterSheet.useHeightCalc = 0;    
+    
+    int i;
+    for (i=0; i<self.numSheets; i++)
+    {     
+        glPushMatrix();
+        
+        self.waterSheet.transX = 0;
+//        self.waterSheet.transY = self.initialWaterDepth +2600*i + self.displacementDepth;
+        self.waterSheet.transY = self.initialWaterDepth + self.waterSheetDepthOverlap*i + self.displacementDepth;
+        
+        if (self.waterSheet.transY < self.cropMaxY && self.waterSheet.transY > self.cropMinY) 
+
+//        if (self.waterSheet.transY < self.cropMaxTopY && self.waterSheet.transY > self.cropMinTopY) 
+        {
+            [self.waterSheet drawWater];
+        }        
+        glPopMatrix();
+    }
+    
+    
+}
+
+
+-(void) resetDisplacement
+{
+    self.displacementDepth = [self.level3SceneController.singleTravelSegment resetDisplacementFast];
+    
+}
+
+
+-(void) dealloc
+{
+    [super dealloc];
+    [self.waterSheet release];
+    [self.level3SceneController release];
+}
+
+
+@end

@@ -1,0 +1,584 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5C5C3AAA0EB148A0004630BB /* VisualFeedback.bundle in Install */ = {isa = PBXBuildFile; fileRef = 8D5B49B6048680CD000E48DA /* VisualFeedback.bundle */; };
+		5C87C8880CBB458F00FE05E4 /* VisualFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C8870CBB458F00FE05E4 /* VisualFeedback.m */; };
+		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		A20775531610E5AD00F57255 /* SoundController.m in Sources */ = {isa = PBXBuildFile; fileRef = A20775521610E5AC00F57255 /* SoundController.m */; };
+		A20851101638A32D00214E71 /* PathFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = A208510F1638A32D00214E71 /* PathFeatures.m */; };
+		A20FB879160F82B2009C3A6B /* ImageController.m in Sources */ = {isa = PBXBuildFile; fileRef = A20FB878160F82B2009C3A6B /* ImageController.m */; };
+		A2242746157C41D500A58B09 /* Level2SceneDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2242745157C41D500A58B09 /* Level2SceneDrawer.m */; };
+		A2242749157C427E00A58B09 /* BoatController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2242748157C427E00A58B09 /* BoatController.m */; };
+		A2242753157C7CCB00A58B09 /* Level2WaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2242752157C7CCB00A58B09 /* Level2WaterController.m */; };
+		A228FB4B157AA59A000CEAD7 /* WaterSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A228FB4A157AA59A000CEAD7 /* WaterSheet.m */; };
+		A22F698B157FCB8A00519673 /* SceneTransitionController.m in Sources */ = {isa = PBXBuildFile; fileRef = A22F698A157FCB8A00519673 /* SceneTransitionController.m */; };
+		A23245BB14C225FC0038F084 /* textures in Resources */ = {isa = PBXBuildFile; fileRef = A23245BA14C225FC0038F084 /* textures */; };
+		A235E07415FFFDF200EEA91E /* DemoDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = A235E07315FFFDF200EEA91E /* DemoDrawer.m */; };
+		A247BEA1158446DD0095527A /* WeatherController.m in Sources */ = {isa = PBXBuildFile; fileRef = A247BEA0158446DC0095527A /* WeatherController.m */; };
+		A265FE3216C45C1900CEC6C1 /* InstructionsDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = A265FE3116C45C1900CEC6C1 /* InstructionsDrawer.m */; };
+		A265FE3516C4768D00CEC6C1 /* VideoController.m in Sources */ = {isa = PBXBuildFile; fileRef = A265FE3416C4768D00CEC6C1 /* VideoController.m */; };
+		A265FE3716C48B5800CEC6C1 /* Instructions.plist in Resources */ = {isa = PBXBuildFile; fileRef = A265FE3616C48B5800CEC6C1 /* Instructions.plist */; };
+		A26685D616029A9200035DFE /* TextController.m in Sources */ = {isa = PBXBuildFile; fileRef = A26685D516029A9200035DFE /* TextController.m */; };
+		A271069715684D840005610C /* TravelController.m in Sources */ = {isa = PBXBuildFile; fileRef = A271069615684D840005610C /* TravelController.m */; };
+		A273CE071491E90200775E5A /* VFWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = A273CE061491E90200775E5A /* VFWindowController.m */; };
+		A273CE281491EA4D00775E5A /* VisualFeedback.xib in Resources */ = {isa = PBXBuildFile; fileRef = A273CE271491EA4D00775E5A /* VisualFeedback.xib */; };
+		A274826814BE1BB200BF7151 /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = A274826714BE1BB200BF7151 /* shaders */; };
+		A27AFA0115893FA10002BE61 /* Level3SceneController.m in Sources */ = {isa = PBXBuildFile; fileRef = A27AFA0015893FA10002BE61 /* Level3SceneController.m */; };
+		A281139A1651AFF100749165 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = A28113991651AFF100749165 /* sounds */; };
+		A2972DC515811C2E00F47705 /* Level3SceneDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2972DC415811C2E00F47705 /* Level3SceneDrawer.m */; };
+		A2972DCA158128B700F47705 /* Level3WaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2972DC9158128B700F47705 /* Level3WaterController.m */; };
+		A2B249A914942D740008A2B0 /* dialogueText.plist in Resources */ = {isa = PBXBuildFile; fileRef = A2B249A814942D740008A2B0 /* dialogueText.plist */; };
+		A2C7D5E3163A349F00CF3E4C /* Path.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C7D5E2163A349F00CF3E4C /* Path.m */; };
+		A2C7D5EB163D909600CF3E4C /* TargetSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C7D5EA163D909500CF3E4C /* TargetSetup.m */; };
+		A2C7D5F5163FB14700CF3E4C /* FeedbackDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C7D5F4163FB14600CF3E4C /* FeedbackDemo.m */; };
+		A2C7D5FB164090D300CF3E4C /* UnderwaterObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C7D5FA164090D300CF3E4C /* UnderwaterObjects.m */; };
+		A2C8A98C15E5E1DE006F6E5D /* Level1SceneDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C8A98B15E5E1DE006F6E5D /* Level1SceneDrawer.m */; };
+		A2C8A98F15E5E319006F6E5D /* Level1WaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2C8A98E15E5E319006F6E5D /* Level1WaterController.m */; };
+		A2EBDC1B148FE6CB00CC8122 /* VFAnalysis.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EBDC1A148FE6CB00CC8122 /* VFAnalysis.m */; };
+		A2EBDC51148FE97400CC8122 /* VFAnalysisFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EBDC50148FE97400CC8122 /* VFAnalysisFrame.m */; };
+		A2EBDD451490326600CC8122 /* VFAdaptationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EBDD441490326600CC8122 /* VFAdaptationDelegate.m */; };
+		A2F4228116D3F9D7003B7845 /* InstructionsMovieFileLookup.plist in Resources */ = {isa = PBXBuildFile; fileRef = A2F4228016D3F9D7003B7845 /* InstructionsMovieFileLookup.plist */; };
+		A2FF3C6C1569DB05000181AE /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2FF3C6B1569DB05000181AE /* SkyController.m */; };
+		A2FF3C731569FD61000181AE /* IslandController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2FF3C721569FD61000181AE /* IslandController.m */; };
+		A2FF3C77156A1D49000181AE /* BirdsController.m in Sources */ = {isa = PBXBuildFile; fileRef = A2FF3C76156A1D49000181AE /* BirdsController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5C5C3AAE0EB148AB004630BB /* Install */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/Shared/Dash/plugins;
+			dstSubfolderSpec = 0;
+			files = (
+				5C5C3AAA0EB148A0004630BB /* VisualFeedback.bundle in Install */,
+			);
+			name = Install;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		32DBCF630370AF2F00C91783 /* VisualFeedback_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualFeedback_Prefix.pch; sourceTree = "<group>"; };
+		5C87C8860CBB458F00FE05E4 /* VisualFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualFeedback.h; sourceTree = "<group>"; };
+		5C87C8870CBB458F00FE05E4 /* VisualFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisualFeedback.m; sourceTree = "<group>"; };
+		8D5B49B6048680CD000E48DA /* VisualFeedback.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VisualFeedback.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20775511610E5AC00F57255 /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
+		A20775521610E5AC00F57255 /* SoundController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundController.m; sourceTree = "<group>"; };
+		A208510E1638A32D00214E71 /* PathFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathFeatures.h; sourceTree = "<group>"; };
+		A208510F1638A32D00214E71 /* PathFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathFeatures.m; sourceTree = "<group>"; };
+		A20FB877160F82B1009C3A6B /* ImageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageController.h; sourceTree = "<group>"; };
+		A20FB878160F82B2009C3A6B /* ImageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageController.m; sourceTree = "<group>"; };
+		A2242744157C41D500A58B09 /* Level2SceneDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level2SceneDrawer.h; sourceTree = "<group>"; };
+		A2242745157C41D500A58B09 /* Level2SceneDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level2SceneDrawer.m; sourceTree = "<group>"; };
+		A2242747157C427E00A58B09 /* BoatController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoatController.h; sourceTree = "<group>"; };
+		A2242748157C427E00A58B09 /* BoatController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoatController.m; sourceTree = "<group>"; };
+		A2242751157C7CCB00A58B09 /* Level2WaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level2WaterController.h; sourceTree = "<group>"; };
+		A2242752157C7CCB00A58B09 /* Level2WaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level2WaterController.m; sourceTree = "<group>"; };
+		A228FB49157AA59A000CEAD7 /* WaterSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterSheet.h; sourceTree = "<group>"; };
+		A228FB4A157AA59A000CEAD7 /* WaterSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterSheet.m; sourceTree = "<group>"; };
+		A22F6989157FCB8A00519673 /* SceneTransitionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTransitionController.h; sourceTree = "<group>"; };
+		A22F698A157FCB8A00519673 /* SceneTransitionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneTransitionController.m; sourceTree = "<group>"; };
+		A23245BA14C225FC0038F084 /* textures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = textures; sourceTree = "<group>"; };
+		A235E07215FFFDF200EEA91E /* DemoDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoDrawer.h; sourceTree = "<group>"; };
+		A235E07315FFFDF200EEA91E /* DemoDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoDrawer.m; sourceTree = "<group>"; };
+		A247BE9F158446DC0095527A /* WeatherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeatherController.h; sourceTree = "<group>"; };
+		A247BEA0158446DC0095527A /* WeatherController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeatherController.m; sourceTree = "<group>"; };
+		A265FE3016C45C1900CEC6C1 /* InstructionsDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstructionsDrawer.h; sourceTree = "<group>"; };
+		A265FE3116C45C1900CEC6C1 /* InstructionsDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InstructionsDrawer.m; sourceTree = "<group>"; };
+		A265FE3316C4768D00CEC6C1 /* VideoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoController.h; sourceTree = "<group>"; };
+		A265FE3416C4768D00CEC6C1 /* VideoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoController.m; sourceTree = "<group>"; };
+		A265FE3616C48B5800CEC6C1 /* Instructions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Instructions.plist; sourceTree = "<group>"; };
+		A26685D416029A9200035DFE /* TextController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextController.h; sourceTree = "<group>"; };
+		A26685D516029A9200035DFE /* TextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextController.m; sourceTree = "<group>"; };
+		A271069515684D840005610C /* TravelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TravelController.h; sourceTree = "<group>"; };
+		A271069615684D840005610C /* TravelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TravelController.m; sourceTree = "<group>"; };
+		A273CE051491E90200775E5A /* VFWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VFWindowController.h; sourceTree = "<group>"; };
+		A273CE061491E90200775E5A /* VFWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VFWindowController.m; sourceTree = "<group>"; };
+		A273CE271491EA4D00775E5A /* VisualFeedback.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VisualFeedback.xib; sourceTree = "<group>"; };
+		A274826714BE1BB200BF7151 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		A27AF9FF15893FA10002BE61 /* Level3SceneController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level3SceneController.h; sourceTree = "<group>"; };
+		A27AFA0015893FA10002BE61 /* Level3SceneController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level3SceneController.m; sourceTree = "<group>"; };
+		A28113991651AFF100749165 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sounds; sourceTree = "<group>"; };
+		A2972DC315811C2D00F47705 /* Level3SceneDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level3SceneDrawer.h; sourceTree = "<group>"; };
+		A2972DC415811C2E00F47705 /* Level3SceneDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level3SceneDrawer.m; sourceTree = "<group>"; };
+		A2972DC8158128B700F47705 /* Level3WaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level3WaterController.h; sourceTree = "<group>"; };
+		A2972DC9158128B700F47705 /* Level3WaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level3WaterController.m; sourceTree = "<group>"; };
+		A2B249A814942D740008A2B0 /* dialogueText.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = dialogueText.plist; sourceTree = "<group>"; };
+		A2B96B37159ABAD800134153 /* Dialogue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dialogue.h; sourceTree = "<group>"; };
+		A2B96B38159ABAD800134153 /* Dialogue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Dialogue.m; sourceTree = "<group>"; };
+		A2C7D5E1163A349F00CF3E4C /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
+		A2C7D5E2163A349F00CF3E4C /* Path.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Path.m; sourceTree = "<group>"; };
+		A2C7D5E9163D909500CF3E4C /* TargetSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TargetSetup.h; sourceTree = "<group>"; };
+		A2C7D5EA163D909500CF3E4C /* TargetSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TargetSetup.m; sourceTree = "<group>"; };
+		A2C7D5F3163FB14600CF3E4C /* FeedbackDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedbackDemo.h; sourceTree = "<group>"; };
+		A2C7D5F4163FB14600CF3E4C /* FeedbackDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedbackDemo.m; sourceTree = "<group>"; };
+		A2C7D5F9164090D300CF3E4C /* UnderwaterObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnderwaterObjects.h; sourceTree = "<group>"; };
+		A2C7D5FA164090D300CF3E4C /* UnderwaterObjects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnderwaterObjects.m; sourceTree = "<group>"; };
+		A2C8A98A15E5E1DE006F6E5D /* Level1SceneDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level1SceneDrawer.h; sourceTree = "<group>"; };
+		A2C8A98B15E5E1DE006F6E5D /* Level1SceneDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level1SceneDrawer.m; sourceTree = "<group>"; };
+		A2C8A98D15E5E319006F6E5D /* Level1WaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level1WaterController.h; sourceTree = "<group>"; };
+		A2C8A98E15E5E319006F6E5D /* Level1WaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level1WaterController.m; sourceTree = "<group>"; };
+		A2C8A99015E60104006F6E5D /* PathController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathController.h; sourceTree = "<group>"; };
+		A2C8A99115E60104006F6E5D /* PathController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathController.m; sourceTree = "<group>"; };
+		A2EBDC19148FE6CB00CC8122 /* VFAnalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VFAnalysis.h; sourceTree = "<group>"; };
+		A2EBDC1A148FE6CB00CC8122 /* VFAnalysis.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VFAnalysis.m; sourceTree = "<group>"; };
+		A2EBDC4F148FE97400CC8122 /* VFAnalysisFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VFAnalysisFrame.h; sourceTree = "<group>"; };
+		A2EBDC50148FE97400CC8122 /* VFAnalysisFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VFAnalysisFrame.m; sourceTree = "<group>"; };
+		A2EBDD431490326600CC8122 /* VFAdaptationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VFAdaptationDelegate.h; sourceTree = "<group>"; };
+		A2EBDD441490326600CC8122 /* VFAdaptationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VFAdaptationDelegate.m; sourceTree = "<group>"; };
+		A2F4228016D3F9D7003B7845 /* InstructionsMovieFileLookup.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InstructionsMovieFileLookup.plist; sourceTree = "<group>"; };
+		A2FF3C6A1569DB05000181AE /* SkyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyController.h; sourceTree = "<group>"; };
+		A2FF3C6B1569DB05000181AE /* SkyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkyController.m; sourceTree = "<group>"; };
+		A2FF3C711569FD61000181AE /* IslandController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IslandController.h; sourceTree = "<group>"; };
+		A2FF3C721569FD61000181AE /* IslandController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IslandController.m; sourceTree = "<group>"; };
+		A2FF3C75156A1D49000181AE /* BirdsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BirdsController.h; sourceTree = "<group>"; };
+		A2FF3C76156A1D49000181AE /* BirdsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BirdsController.m; sourceTree = "<group>"; };
+		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D5B49B3048680CD000E48DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* VisualFeedback */ = {
+			isa = PBXGroup;
+			children = (
+				A2C7D5E4163CED5600CF3E4C /* old */,
+				08FB77AFFE84173DC02AAC07 /* Classes */,
+				32C88E010371C26100C91783 /* Other Sources */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
+				19C28FB8FE9D52D311CA2CBB /* Products */,
+			);
+			name = VisualFeedback;
+			sourceTree = "<group>";
+		};
+		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
+				1058C7AEFEA557BF11CA2CBB /* Other Frameworks */,
+			);
+			name = "Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A2F4228016D3F9D7003B7845 /* InstructionsMovieFileLookup.plist */,
+				A265FE3616C48B5800CEC6C1 /* Instructions.plist */,
+				A28113991651AFF100749165 /* sounds */,
+				A23245BA14C225FC0038F084 /* textures */,
+				A274826714BE1BB200BF7151 /* shaders */,
+				A2B249A814942D740008A2B0 /* dialogueText.plist */,
+				8D5B49B7048680CD000E48DA /* Info.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		08FB77AFFE84173DC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				5C87C8860CBB458F00FE05E4 /* VisualFeedback.h */,
+				5C87C8870CBB458F00FE05E4 /* VisualFeedback.m */,
+				A2579576156AEECB003FDDBD /* Adaptation */,
+				A2579577156AF65E003FDDBD /* Analysis */,
+				A273CE271491EA4D00775E5A /* VisualFeedback.xib */,
+				A273CE051491E90200775E5A /* VFWindowController.h */,
+				A273CE061491E90200775E5A /* VFWindowController.m */,
+				A228FB49157AA59A000CEAD7 /* WaterSheet.h */,
+				A228FB4A157AA59A000CEAD7 /* WaterSheet.m */,
+				A235E07515FFFDF700EEA91E /* DemoComponents */,
+				A2972DC715811EE500F47705 /* SceneManagement */,
+				A2FF3C741569FD74000181AE /* Level1Components */,
+				A2242743157C40C700A58B09 /* Level2Components */,
+				A2972DC615811C3C00F47705 /* Level3Components */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				089C167FFE841241C02AAC07 /* AppKit.framework */,
+				D2F7E65807B2D6F200F64583 /* CoreData.framework */,
+				089C1672FE841209C02AAC07 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FB8FE9D52D311CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D5B49B6048680CD000E48DA /* VisualFeedback.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		32C88E010371C26100C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32DBCF630370AF2F00C91783 /* VisualFeedback_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		A2242743157C40C700A58B09 /* Level2Components */ = {
+			isa = PBXGroup;
+			children = (
+				A2242744157C41D500A58B09 /* Level2SceneDrawer.h */,
+				A2242745157C41D500A58B09 /* Level2SceneDrawer.m */,
+				A2242751157C7CCB00A58B09 /* Level2WaterController.h */,
+				A2242752157C7CCB00A58B09 /* Level2WaterController.m */,
+				A2242747157C427E00A58B09 /* BoatController.h */,
+				A2242748157C427E00A58B09 /* BoatController.m */,
+			);
+			name = Level2Components;
+			sourceTree = "<group>";
+		};
+		A235E07515FFFDF700EEA91E /* DemoComponents */ = {
+			isa = PBXGroup;
+			children = (
+				A265FE3016C45C1900CEC6C1 /* InstructionsDrawer.h */,
+				A265FE3116C45C1900CEC6C1 /* InstructionsDrawer.m */,
+				A2C7D5E9163D909500CF3E4C /* TargetSetup.h */,
+				A2C7D5EA163D909500CF3E4C /* TargetSetup.m */,
+				A265FE3316C4768D00CEC6C1 /* VideoController.h */,
+				A265FE3416C4768D00CEC6C1 /* VideoController.m */,
+				A235E07215FFFDF200EEA91E /* DemoDrawer.h */,
+				A235E07315FFFDF200EEA91E /* DemoDrawer.m */,
+				A2C7D5F3163FB14600CF3E4C /* FeedbackDemo.h */,
+				A2C7D5F4163FB14600CF3E4C /* FeedbackDemo.m */,
+				A26685D416029A9200035DFE /* TextController.h */,
+				A26685D516029A9200035DFE /* TextController.m */,
+				A20FB877160F82B1009C3A6B /* ImageController.h */,
+				A20FB878160F82B2009C3A6B /* ImageController.m */,
+				A20775511610E5AC00F57255 /* SoundController.h */,
+				A20775521610E5AC00F57255 /* SoundController.m */,
+			);
+			name = DemoComponents;
+			sourceTree = "<group>";
+		};
+		A2579576156AEECB003FDDBD /* Adaptation */ = {
+			isa = PBXGroup;
+			children = (
+				A2EBDD431490326600CC8122 /* VFAdaptationDelegate.h */,
+				A2EBDD441490326600CC8122 /* VFAdaptationDelegate.m */,
+			);
+			name = Adaptation;
+			sourceTree = "<group>";
+		};
+		A2579577156AF65E003FDDBD /* Analysis */ = {
+			isa = PBXGroup;
+			children = (
+				A2EBDC19148FE6CB00CC8122 /* VFAnalysis.h */,
+				A2EBDC1A148FE6CB00CC8122 /* VFAnalysis.m */,
+				A2EBDC4F148FE97400CC8122 /* VFAnalysisFrame.h */,
+				A2EBDC50148FE97400CC8122 /* VFAnalysisFrame.m */,
+			);
+			name = Analysis;
+			sourceTree = "<group>";
+		};
+		A2972DC615811C3C00F47705 /* Level3Components */ = {
+			isa = PBXGroup;
+			children = (
+				A2972DC315811C2D00F47705 /* Level3SceneDrawer.h */,
+				A2972DC415811C2E00F47705 /* Level3SceneDrawer.m */,
+				A271069515684D840005610C /* TravelController.h */,
+				A271069615684D840005610C /* TravelController.m */,
+				A27AF9FF15893FA10002BE61 /* Level3SceneController.h */,
+				A27AFA0015893FA10002BE61 /* Level3SceneController.m */,
+				A2972DC8158128B700F47705 /* Level3WaterController.h */,
+				A2972DC9158128B700F47705 /* Level3WaterController.m */,
+				A2FF3C711569FD61000181AE /* IslandController.h */,
+				A2FF3C721569FD61000181AE /* IslandController.m */,
+				A2FF3C6A1569DB05000181AE /* SkyController.h */,
+				A2FF3C6B1569DB05000181AE /* SkyController.m */,
+				A247BE9F158446DC0095527A /* WeatherController.h */,
+				A247BEA0158446DC0095527A /* WeatherController.m */,
+				A2FF3C75156A1D49000181AE /* BirdsController.h */,
+				A2FF3C76156A1D49000181AE /* BirdsController.m */,
+			);
+			name = Level3Components;
+			sourceTree = "<group>";
+		};
+		A2972DC715811EE500F47705 /* SceneManagement */ = {
+			isa = PBXGroup;
+			children = (
+				A22F6989157FCB8A00519673 /* SceneTransitionController.h */,
+				A22F698A157FCB8A00519673 /* SceneTransitionController.m */,
+			);
+			name = SceneManagement;
+			sourceTree = "<group>";
+		};
+		A2C7D5E4163CED5600CF3E4C /* old */ = {
+			isa = PBXGroup;
+			children = (
+				A2B96B37159ABAD800134153 /* Dialogue.h */,
+				A2B96B38159ABAD800134153 /* Dialogue.m */,
+				A2C8A99015E60104006F6E5D /* PathController.h */,
+				A2C8A99115E60104006F6E5D /* PathController.m */,
+			);
+			name = old;
+			sourceTree = "<group>";
+		};
+		A2FF3C741569FD74000181AE /* Level1Components */ = {
+			isa = PBXGroup;
+			children = (
+				A2C7D5E1163A349F00CF3E4C /* Path.h */,
+				A2C7D5E2163A349F00CF3E4C /* Path.m */,
+				A208510E1638A32D00214E71 /* PathFeatures.h */,
+				A208510F1638A32D00214E71 /* PathFeatures.m */,
+				A2C8A98A15E5E1DE006F6E5D /* Level1SceneDrawer.h */,
+				A2C8A98B15E5E1DE006F6E5D /* Level1SceneDrawer.m */,
+				A2C7D5F9164090D300CF3E4C /* UnderwaterObjects.h */,
+				A2C7D5FA164090D300CF3E4C /* UnderwaterObjects.m */,
+				A2C8A98D15E5E319006F6E5D /* Level1WaterController.h */,
+				A2C8A98E15E5E319006F6E5D /* Level1WaterController.m */,
+			);
+			name = Level1Components;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D5B49AC048680CD000E48DA /* VisualFeedback */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB913A08733D840010E9CD /* Build configuration list for PBXNativeTarget "VisualFeedback" */;
+			buildPhases = (
+				8D5B49AF048680CD000E48DA /* Resources */,
+				8D5B49B1048680CD000E48DA /* Sources */,
+				8D5B49B3048680CD000E48DA /* Frameworks */,
+				5C5C3AAE0EB148AB004630BB /* Install */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VisualFeedback;
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = VisualFeedback;
+			productReference = 8D5B49B6048680CD000E48DA /* VisualFeedback.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
+			buildConfigurationList = 1DEB913E08733D840010E9CD /* Build configuration list for PBXProject "VisualFeedback" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 089C166AFE841209C02AAC07 /* VisualFeedback */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D5B49AC048680CD000E48DA /* VisualFeedback */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D5B49AF048680CD000E48DA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
+				A273CE281491EA4D00775E5A /* VisualFeedback.xib in Resources */,
+				A2B249A914942D740008A2B0 /* dialogueText.plist in Resources */,
+				A274826814BE1BB200BF7151 /* shaders in Resources */,
+				A23245BB14C225FC0038F084 /* textures in Resources */,
+				A281139A1651AFF100749165 /* sounds in Resources */,
+				A265FE3716C48B5800CEC6C1 /* Instructions.plist in Resources */,
+				A2F4228116D3F9D7003B7845 /* InstructionsMovieFileLookup.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D5B49B1048680CD000E48DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C87C8880CBB458F00FE05E4 /* VisualFeedback.m in Sources */,
+				A2EBDC1B148FE6CB00CC8122 /* VFAnalysis.m in Sources */,
+				A2EBDC51148FE97400CC8122 /* VFAnalysisFrame.m in Sources */,
+				A2EBDD451490326600CC8122 /* VFAdaptationDelegate.m in Sources */,
+				A273CE071491E90200775E5A /* VFWindowController.m in Sources */,
+				A271069715684D840005610C /* TravelController.m in Sources */,
+				A2FF3C6C1569DB05000181AE /* SkyController.m in Sources */,
+				A2FF3C731569FD61000181AE /* IslandController.m in Sources */,
+				A2FF3C77156A1D49000181AE /* BirdsController.m in Sources */,
+				A228FB4B157AA59A000CEAD7 /* WaterSheet.m in Sources */,
+				A2242746157C41D500A58B09 /* Level2SceneDrawer.m in Sources */,
+				A2242749157C427E00A58B09 /* BoatController.m in Sources */,
+				A2242753157C7CCB00A58B09 /* Level2WaterController.m in Sources */,
+				A22F698B157FCB8A00519673 /* SceneTransitionController.m in Sources */,
+				A2972DC515811C2E00F47705 /* Level3SceneDrawer.m in Sources */,
+				A2972DCA158128B700F47705 /* Level3WaterController.m in Sources */,
+				A247BEA1158446DD0095527A /* WeatherController.m in Sources */,
+				A27AFA0115893FA10002BE61 /* Level3SceneController.m in Sources */,
+				A2C8A98C15E5E1DE006F6E5D /* Level1SceneDrawer.m in Sources */,
+				A2C8A98F15E5E319006F6E5D /* Level1WaterController.m in Sources */,
+				A235E07415FFFDF200EEA91E /* DemoDrawer.m in Sources */,
+				A26685D616029A9200035DFE /* TextController.m in Sources */,
+				A20FB879160F82B2009C3A6B /* ImageController.m in Sources */,
+				A20775531610E5AD00F57255 /* SoundController.m in Sources */,
+				A20851101638A32D00214E71 /* PathFeatures.m in Sources */,
+				A2C7D5E3163A349F00CF3E4C /* Path.m in Sources */,
+				A2C7D5EB163D909600CF3E4C /* TargetSetup.m in Sources */,
+				A2C7D5F5163FB14700CF3E4C /* FeedbackDemo.m in Sources */,
+				A2C7D5FB164090D300CF3E4C /* UnderwaterObjects.m in Sources */,
+				A265FE3216C45C1900CEC6C1 /* InstructionsDrawer.m in Sources */,
+				A265FE3516C4768D00CEC6C1 /* VideoController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C167EFE841241C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB913B08733D840010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = VisualFeedback_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				KEEP_PRIVATE_EXTERNS = NO;
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+				);
+				PRODUCT_NAME = VisualFeedback;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "~/code/ame/HAMRR/MotionAnalysisPlugin/** ~/code/ame/HAMRR/VisualFeedback-hg/DemoProjects/HomeSystemHeaderFiles ~/code/ame/HAMRR/VisualFeedback-hg/DemoProjects/DemoAnalysis $(DASH_DIR)/** ~/code/ame/HAMRR/AdaptationPlugin/**";
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		1DEB913C08733D840010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DASH_DIR = "~/code/ame/dash3";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = VisualFeedback_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				PRODUCT_NAME = VisualFeedback;
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		1DEB913F08733D840010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DASH_DIR = "~/code/ame/dash3";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "~/code/ame/HAMRR/VisualFeedback-hg/DemoProjects/HomeSystemHeaderFiles ~/code/ame/HAMRR/VisualFeedback-hg/DemoProjects/DemoAnalysis $(DASH_DIR)/** ~/code/ame/HAMRR/AdaptationPlugin/**";
+			};
+			name = Debug;
+		};
+		1DEB914008733D840010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DASH_DIR = "~/code/ame/dash";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB913A08733D840010E9CD /* Build configuration list for PBXNativeTarget "VisualFeedback" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB913B08733D840010E9CD /* Debug */,
+				1DEB913C08733D840010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB913E08733D840010E9CD /* Build configuration list for PBXProject "VisualFeedback" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB913F08733D840010E9CD /* Debug */,
+				1DEB914008733D840010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}
